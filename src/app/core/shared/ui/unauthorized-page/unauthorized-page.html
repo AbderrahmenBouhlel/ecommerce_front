@@ -1,0 +1,64 @@
+<div class="min-h-screen bg-linear-to-br from-[#EEF1F6] via-[#E6EAF1] to-[#DDE2EA] flex items-center justify-center p-6">
+
+  <div class="relative w-full max-w-105">
+
+    <!-- controlled glow -->
+    <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-yellow-400/20 blur-[80px] rounded-full"></div>
+
+    <div class="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-[28px]
+                shadow-[0_10px_30px_rgba(0,0,0,0.06),0_30px_80px_rgba(0,0,0,0.08)]
+                p-12 text-center">
+
+      <!-- character -->
+      <div class="relative w-32 h-32 mx-auto! mb-8">
+
+        <!-- halo -->
+        <div class="absolute inset-0 bg-yellow-300/30 blur-xl rounded-full"></div>
+
+        <!-- crown -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-16 
+                    border-10 border-yellow-400/90 rounded-t-full"></div>
+
+        <!-- face with gradient -->
+        <div class="absolute bottom-0 w-full h-24 
+                    bg-linear-to-b from-zinc-800 to-zinc-950 
+                    rounded-2xl flex items-start justify-center pt-4 shadow-md">
+
+          <div class="flex gap-1.5">
+            <div class="w-6 h-6 bg-white/95 rounded-full relative">
+              <div class="absolute bottom-1 right-1 w-2 h-2 bg-zinc-900 rounded-full"></div>
+            </div>
+            <div class="w-6 h-6 bg-white/95 rounded-full relative">
+              <div class="absolute bottom-1 right-1 w-2 h-2 bg-zinc-900 rounded-full"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- title -->
+      <h1 class="text-[28px] font-semibold text-zinc-900 tracking-tight mb-2">
+        Access Denied
+      </h1>
+
+      <p class="text-zinc-500 text-[15px] leading-relaxed mb-8 px-3">
+        You don’t have permission to enter this area.
+      </p>
+
+      <!-- actions -->
+      <div class="flex gap-3 p-8">
+
+        <a [routerLink]="'/auth/login'"
+           class="w-full py-3.5 rounded-2xl 
+                  bg-zinc-900 text-white font-semibold 
+                  shadow-[0_6px_14px_rgba(0,0,0,0.25)]
+                  hover:-translate-y-px hover:bg-zinc-800
+                  transition-all active:scale-[0.98]">
+          Switch Account
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+</div>

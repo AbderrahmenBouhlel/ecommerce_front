@@ -1,0 +1,30 @@
+
+<div class="grid grid-cols-[3fr_2fr] bg-gray-300 h-full w-full">
+    <section class="visual-side relative h-full w-full">
+        
+
+        <div class="character-wrapper w-60  absolute bottom-20 z-10 left-80">
+            <app-purple-character />
+        </div>
+
+        <div class="character-wrapper w-45 purple-pos absolute bottom-20 z-10 left-120">
+            <app-black-character />
+        </div>
+
+
+        <div class="character-wrapper w-40 purple-pos absolute bottom-20 z-10 left-142">
+            <app-yellow-character />
+        </div>
+            
+            
+            
+     
+    </section>
+
+
+    <section class="form-side bg-white rounded-2xl m-2! flex flex-col justify-center px-20! ">
+        <router-outlet></router-outlet>
+    </section>
+</div>
+
+

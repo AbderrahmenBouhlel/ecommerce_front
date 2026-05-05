@@ -1,0 +1,15 @@
+.dialog-btn {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0.65rem;
+  padding: 0.55rem 1.35rem;
+  font-size: 1.08rem;
+  font-weight: 600;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.dialog-btn:active {
+  transform: translateY(1px);
+}

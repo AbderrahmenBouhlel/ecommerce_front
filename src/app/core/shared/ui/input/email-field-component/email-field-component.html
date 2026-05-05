@@ -1,0 +1,21 @@
+
+
+<div 
+    [class.filled] = "value != ''"
+    class="input-field"
+>
+    <label for="email-id">{{label}}</label>
+
+    <input 
+        [value]="value"
+        (input)="handleInputChange($event)"
+        (focus)="handleFocus()"
+        (blur)="handleBlur()"
+        type="text" 
+        name="email" 
+        id="email-id"
+        [disabled] = "disabled"
+    >
+
+</div>
+

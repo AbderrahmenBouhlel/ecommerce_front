@@ -1,0 +1,67 @@
+<div class="relative w-full">
+
+  <!-- Trigger -->
+  <button
+    type="button"
+    (click)="toggle()"
+    class="w-full flex items-center justify-between px-4 py-2 text-sm border rounded-lg bg-white hover:border-slate-400 transition"
+  >
+    <span class="truncate text-left">
+      {{ selectedItem?.name || placeholder }}
+    </span>
+
+    <!-- Arrow -->
+    <svg
+      class="w-4 h-4 ml-2 transition-transform"
+      [class.rotate-180]="isOpen()"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <!-- Dropdown -->
+  @if (isOpen()) {
+    <div
+      class="absolute top-10 left-0 w-full mt-2 bg-white border rounded-xl shadow-lg z-50 overflow-hidden"
+    >
+      <!-- LOADING -->
+      @if (isLoading()) {
+        <div class="flex justify-center py-6">
+          <div class="w-5 h-5 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin"></div>
+        </div>
+      }
+
+      <!-- ITEMS -->
+      @if (!isLoading() && items().length > 0) {
+        <ul class="max-h-30 overflow-y-auto">
+
+          @for (item of items(); track item) {
+            <li>
+              <button
+                type="button"
+                (click)="selectItem(item)"
+                class="w-full px-4 py-2 text-left text-sm transition hover:bg-slate-100"
+                [class.bg-slate-200]="item === selectedItem"
+              >
+                {{ item.name }}
+              </button>
+            </li>
+          }
+
+        </ul>
+      }
+
+      <!-- EMPTY -->
+      @if (!isLoading() && items().length === 0) {
+        <div class="py-4 text-sm text-center text-slate-400">
+          No results
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

@@ -1,0 +1,129 @@
+<div
+  class="relative w-[min(420px,calc(100vw-32px))] rounded-[10px] bg-white p-6 text-slate-800"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dialog-title"
+>
+  <button
+    class="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded text-xl leading-none text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+    type="button"
+    aria-label="Close dialog"
+    (click)="close()"
+  >
+    x
+  </button>
+
+  <h2 id="dialog-title" class="m-0 text-xl leading-[1.1] font-bold text-slate-900">
+    Create New Category
+  </h2>
+
+  <p class="mt-2 mb-5 text-md text-slate-500">
+    Add a new category and set the target gender.
+  </p>
+
+  <form class="flex flex-col gap-2.5" (ngSubmit)="createCategory()">
+
+    <!-- NAME -->
+    <label class="mt-1.5 text-xl font-semibold text-slate-900" for="categoryName">
+      Category Name
+    </label>
+
+    <input
+      #categoryNameInput
+      id="categoryName"
+      class="box-border w-full rounded-[9px] border border-transparent bg-slate-100 px-3.5 py-3.75 text-md text-slate-900 outline-none placeholder:text-slate-400 focus:border-blue-300 focus:shadow-[0_0_0_3px_rgba(135,163,245,0.2)]"
+      type="text"
+      name="categoryName"
+      [value]="name()"
+      (input)="onNameChange(categoryNameInput.value)"
+      (blur)="onNameBlur()"
+      placeholder="e.g. Shoes, Dresses, Accessories"
+    />
+
+    <!-- NAME ERROR -->
+    <div
+      class="text-sm min-h-5 mt-1 text-red-500 transition-opacity duration-200"
+      [class.opacity-100]="displayedNameError()"
+      [class.opacity-0]="!displayedNameError()"
+    >
+      {{ displayedNameError() }}
+    </div>
+
+    <!-- GENDER -->
+    <div>
+      <label class="mt-1.5 mb-2 block text-xl font-semibold text-slate-900" for="genderSelect">
+        Gender
+      </label>
+
+      <div class="flex gap-3">
+        @for (item of genderOptions; track $index) {
+            <div
+                class="flex-1 cursor-pointer rounded-[9px] border border-transparent px-2 py-2 text-center text-md font-medium transition"
+                [ngClass]="{
+                    'bg-blue-400 text-white hover:bg-blue-500': selectedGender() === item,
+                    'bg-slate-100 text-slate-900 hover:bg-slate-200': selectedGender() !== item
+                }"
+                (click)="onGenderChange(item)"
+            >   
+                {{ item}}
+            </div>
+        }
+
+      </div>
+      
+    </div>
+
+
+
+
+    <!-- DESCRIPTION -->
+    <label class="mt-1.5 text-xl font-semibold text-slate-900" for="categoryDescription">
+      Description (Optional)
+    </label>
+
+    <textarea
+      #categoryDescriptionInput
+      id="categoryDescription"
+      class="box-border min-h-23.75 w-full resize-y rounded-[9px] border border-transparent bg-slate-100 px-3.5 py-3.75 text-md text-slate-900 outline-none placeholder:text-slate-400 focus:border-blue-300 focus:shadow-[0_0_0_3px_rgba(135,163,245,0.2)]"
+      name="categoryDescription"
+      [value]="description()"
+      (input)="onDescriptionChange(categoryDescriptionInput.value)"
+      rows="3"
+      placeholder="Brief description of this category"
+    ></textarea>
+
+    <!-- SERVER ERROR -->
+    <div
+      class="text-sm min-h-10 mt-1 text-red-500 transition-opacity duration-200"
+      [class.opacity-100]="displayServerError()"
+      [class.opacity-0]="!displayServerError()"
+    >
+      {{ displayServerError() }}
+    </div>  
+
+    <!-- ACTIONS -->
+    <div class="mt-2 flex justify-end gap-2.5">
+      <button
+        class="rounded-[9px] cursor-pointer bg-slate-100 px-4.5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-200"
+        type="button"
+        (click)="close()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="rounded-[9px] px-4.5 py-2.5 text-sm font-semibold text-white transition"
+        [class.cursor-pointer]="isValid() && !isSubmitting()"
+        [class.bg-blue-400]="isValid() && !isSubmitting()"
+        [class.hover:bg-blue-500]="isValid() && !isSubmitting()"
+        [class.cursor-not-allowed]="!isValid() || isSubmitting()"
+        [class.bg-blue-300]="!isValid() || isSubmitting()"
+        type="submit"
+        [disabled]="!isValid() || isSubmitting()"
+      >
+        {{ isSubmitting() ? 'Creating...' : 'Create Category' }}
+      </button>
+    </div>
+
+  </form>
+</div>

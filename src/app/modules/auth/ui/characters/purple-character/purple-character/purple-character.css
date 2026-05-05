@@ -1,0 +1,27 @@
+
+
+
+svg {
+  overflow: visible;
+}
+
+
+#face.nervous .eye-pupil {
+    animation: nervous-glance 3s ease-in-out infinite;
+}
+
+@keyframes nervous-glance {
+
+    0%, 22% {
+        transform: translateX(-2px);
+    }
+
+    28%, 72% {
+        transform: translateX(2px);
+    }
+
+    78%, 100% {
+        transform: translateX(-2px);
+    }
+
+}

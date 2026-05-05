@@ -1,0 +1,120 @@
+<!-- Dashboard shell: sidebar + content area -->
+<div class="flex min-h-screen bg-slate-100">
+
+    <aside
+        class="border-r border-slate-700/70 bg-slate-900 px-3 py-4 text-slate-300 transition-all duration-200"
+        [ngClass]="{
+            'w-72': isSidebarOpen(),
+            'w-20': !isSidebarOpen()
+        }"
+    >
+
+        <!-- Sidebar header -->
+        <header class="group relative flex h-11 items-center">
+
+            <!-- logo -->
+            <div
+                class="absolute left-0 rounded-2xl hover:bg-slate-800 p-1 w-10 h-10 flex items-center justify-center"
+                [ngClass]="{
+                    'left-0': isSidebarOpen(),
+                    'left-1/2 -translate-x-1/2': !isSidebarOpen(),
+                    'group-hover:opacity-0 group-hover:pointer-events-none': !isSidebarOpen()
+                }"
+            >
+                <mat-icon class="text-slate-200">storefront</mat-icon>
+            </div>
+
+            <!-- toggle sidebar button -->
+            <div
+                class="absolute hover:bg-slate-800 p-2 flex items-center justify-center cursor-pointer rounded-2xl w-10 h-10"
+                [ngClass]="{
+                    'opacity-100 pointer-events-auto right-0': isSidebarOpen(),
+                    'opacity-0 pointer-events-none': !isSidebarOpen(),
+                    'group-hover:opacity-100 group-hover:pointer-events-auto left-1/2 -translate-x-1/2': !isSidebarOpen(),
+                    'rotate-180': !isSidebarOpen(),
+                }"
+                (click)="toggleSidebar()"
+                aria-label="Collapse sidebar"
+                [attr.aria-expanded]="isSidebarOpen()"
+            >
+                <mat-icon>chevron_left</mat-icon>
+            </div>
+
+        </header>
+
+        
+
+        <!-- Navigation -->
+        <nav class="mt-2 flex flex-col gap-1" aria-label="Admin navigation">
+            @for (item of sideBarItems; track $index) {
+                <a
+                    class="flex min-h-10 relative items-center gap-2.5 rounded-lg px-2.5 text-sm font-medium transition hover:bg-slate-800 hover:text-slate-50"
+                    [routerLink]="item.route"
+                    routerLinkActive="bg-slate-700 text-white ring-1 ring-slate-500"
+                >
+                    <mat-icon 
+                        class="absolute left-4 text-[18px]"
+                    >{{ item.icon }}</mat-icon>
+                    <span 
+                        class="transition-opacity absolute left-14"
+                        [ngClass]="{
+                            'opacity-100': isSidebarOpen(),
+                            'opacity-0 pointer-events-none': !isSidebarOpen()
+                        }"
+                    >
+                        {{ item.label }}
+                    </span>
+                </a>
+            }
+
+            @if (isSidebarOpen()) {
+            <!-- Taxonomy -->
+                <section class="mt-1">
+
+                    <button
+                        type="button"
+                        class="flex min-h-10 w-full items-center gap-2.5 rounded-lg bg-slate-800 px-2.5 text-sm font-medium transition hover:bg-slate-700 hover:text-slate-50"
+                        (click)="toggleTaxonomy()"
+                        [attr.aria-expanded]="isTaxonomyOpen()"
+                    >
+                        <mat-icon>category</mat-icon>
+                        <span>Taxonomy</span>
+
+                        <mat-icon
+                            class="ml-auto transition-transform"
+                            [ngClass]="{ 'rotate-180': isTaxonomyOpen() }"
+                        >
+                            expand_more
+                        </mat-icon>
+                    </button>
+
+                    @if (isTaxonomyOpen()) {
+                        <div class="relative ml-3 mt-1 flex flex-col gap-1 border-l border-slate-700 pl-3">
+
+                            <!-- Categories -->
+                            @for (item of taxonomyItems; track $index) {
+                                <a
+                                    class="flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13px] font-medium transition hover:bg-slate-800 hover:text-slate-50"
+                                    [routerLink]="item.route"
+                                    routerLinkActive="bg-slate-700 text-white ring-1 ring-slate-500"
+                                >
+                                    <mat-icon class="text-[18px]">{{ item.icon }}</mat-icon>
+                                    <span>{{ item.label }}</span>
+                                </a>
+                            }
+
+                        </div>
+                    }
+
+                </section>
+            }
+        </nav>
+
+    </aside>
+
+    <!-- Content -->
+    <main class="min-w-0 flex-1 overflow-auto bg-slate-50">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

@@ -1,0 +1,30 @@
+
+
+.toggle {
+  width: 50px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.toggle .knob {
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: 0.2s;
+}
+
+.toggle .knob.active {
+  transform: translateX(24px);
+}
+
+.toggle.active-bg {
+  background: #4ade80;
+}

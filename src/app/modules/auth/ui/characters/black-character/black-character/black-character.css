@@ -1,0 +1,64 @@
+
+
+
+svg {
+  overflow: visible;
+}
+
+
+
+
+
+.sad-eye-lay{
+    display: none;
+}
+#eyePair.sad .sad-eye-lay{
+    display: block;
+}
+
+
+
+
+
+
+#eyePair.sad .eye-pupil {
+    animation: sad-glance 5s ease-in-out infinite alternate;
+}
+
+
+@keyframes sad-glance {
+    0%, 100% {
+        /* Drooping slightly low and centered */
+        transform: translate(0px, 2px);
+    }
+    35% {
+        /* Sinking more and looking slightly right */
+        transform: translate(2px, 4px);
+    }
+    75% {
+        /* Sinking and looking slightly left */
+        transform: translate(-2px, 4px);
+    }
+}
+
+
+
+#eyePair.nervous .eye-pupil {
+    /* Slow and deliberate to feel "guilty" */
+    animation: nervous-glance 4s ease-in-out infinite;
+}
+
+@keyframes nervous-glance {
+    0%, 25% {
+        transform: translate(-3px, 3px); 
+    }
+    25%, 50% {
+        transform: translate(-3px, -3px); 
+    }
+    50%,75% {
+        transform: translate(3px, 3px); 
+    }
+    75%, 100% {
+        transform: translate(-3px, 3px);
+    }
+}

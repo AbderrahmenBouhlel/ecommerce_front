@@ -1,0 +1,22 @@
+<svg width="300" height="200" stroke="currentColor"  viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- S: bolder + slightly tighter curves -->
+  <path d="M132 60
+           C108 60, 102 78, 124 88
+           C152 98, 152 115, 124 122
+           C96 130, 96 146, 130 148"
+        fill="none"
+        stroke-width="20"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+  <!-- H: bold + slightly pulled closer -->
+  <path d="M176 60 L176 148
+           M176 104 L214 104
+           M214 60 L214 148"
+        fill="none"
+        stroke-width="20"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+</svg>

@@ -1,0 +1,32 @@
+<div
+  class="flex items-center gap-4 rounded-2xl border border-slate-300 bg-white px-5 py-3 shadow-xs"
+>
+  <!-- Toggle -->
+  <button
+    type="button"
+    class="relative h-5 w-10 rounded-full transition-colors duration-200"
+    [ngClass]="filterValue().isActive ? 'bg-green-500' : 'bg-slate-300'"
+    (click)="onToggleClick()"
+    [attr.aria-label]="filterValue().isActive ? 'Deactivate value' : 'Activate value'"
+  >
+    <span
+      class="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform duration-200"
+      [ngClass]="filterValue().isActive ? 'translate-x-5' : 'translate-x-0'"
+    ></span>
+  </button>
+
+  <!-- Name -->
+  <p class="flex-1 text-lg font-medium text-slate-700">
+    {{ filterValue().name }}
+  </p>
+
+  <!-- Delete -->
+  <button
+    type="button"
+    class="flex h-7! w-7! items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-200 hover:text-slate-600"
+    (click)="onDeleteClick()"
+    aria-label="Delete value"
+  >
+    <mat-icon>delete_outline</mat-icon>
+  </button>
+</div>

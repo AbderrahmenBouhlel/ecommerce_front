@@ -1,0 +1,39 @@
+
+
+<svg #body  viewBox="0 0 160 250" width="100%" height="100%"  xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <clipPath id="bodyClip">
+            <path #characterShapeClip/>
+        </clipPath>
+    </defs>
+
+    <g #characterBody id="character-body" transform="translate(0, 0) rotate(0)" clip-path="url(#bodyClip)">
+        <path #characterShape fill="#e6c20b"/>
+        <g #faceContainer id="face-container" transform="translate(0, 0)" >
+            <g id="face"  #face transform="translate(60, 80)">
+                <g id="leftEye"  #leftEye    transform="translate(-35, 0)">
+                    <ellipse class="sclera" cx="0" cy="0" rx="4" ry="4" fill="black" stroke="#e6c20b" stroke-width="0.5"></ellipse>
+                    <path id="leftEyelid" fill="#e6c20b"/>
+                </g>
+
+                <g id="rightEye" #rightEye  transform="translate(35, 0)">
+                    <ellipse class="sclera" cx="0" cy="0" rx="4" ry="4" fill="black" stroke="#e6c20b" stroke-width="0.5"></ellipse>
+                    <path id="rightEyelid" fill="#e6c20b"/>
+                </g>
+            </g>
+        </g>
+    </g>
+    <g #characterBodyMirror  id="character-body-mirror" transform="translate(0, 0) rotate(0)">
+        <g #faceContainerMirror id="face-container" transform="translate(0, 0)" >
+            <g #faceMirror id="face"    transform="translate(60, 80)">
+                <g id="mouth" #mouth transform="translate(0, 20)">
+                    <path id="mouthShape" fill="none"
+                        stroke-linecap="round"
+                        stroke="black" stroke-width="6"/>
+                </g> 
+            </g>
+        </g>
+    </g>
+</svg>
+
+
