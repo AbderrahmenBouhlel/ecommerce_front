@@ -8,18 +8,28 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductsStore } from '../../../stores/ProductManagmentStore/products.store';
+import {ApiException} from '../../../../../core/shared/api/api.responseTypes';
 
 
-export type stepState = {
+const CREATE_PRODUCT_ERROR_MAP: Record<string, string> = {
+  'REQUEST.INVALID': 'Invalid data. Please review your inputs.',
+  'AUTH.EXPIRED_TOKEN': 'Your session has expired. Please log in again.',
+  'AUTH.UNAUTHORIZED_ACTION': 'You are not allowed to perform this action.',
+  'PRODUCT.DUPLICATE_NAME': 'A product with this name already exists.',
+  'CATEGORY.NOT_FOUND': 'The selected category does not exist anymore.',
+  'CATEGORY.INACTIVE': 'The selected category is inactive. Please choose another one.',
+};
+
+const STEP_ROUTE_MAP: Record<number, string> = {
+  1: '/admin/products/new/step-1',
+  2: '/admin/products/new/step-2',
+  3: '/admin/products/new/step-3',
+  4: '/admin/products/new/step-4'
+};
+
+export type StepState = {
   index: number;
-  state : 'pending' | 'completed' | 'current';
-}
-
-export type AllStepStates = {
-  step1: stepState;
-  step2: stepState;
-  step3: stepState;
-  step4: stepState;
+  state : 'pending' | 'completed'| 'current';
 }
 
 
@@ -31,27 +41,15 @@ export type AllStepStates = {
   providers: [ProductCreationService]
 })
 export class ProductCreationPage {
-  static STEP_MAP : Record<string, number> = {
-    'step-1': 1,
-    'step-2': 2,
-    'step-3': 3,
-    'step-4': 4,
-  };
 
-  stepStates = signal<AllStepStates>({
-    step1: { index: 1, state: 'current' },
-    step2: { index: 2, state: 'pending' },
-    step3: { index: 3, state: 'pending' },
-    step4: { index: 4, state: 'pending' },
-  });
-  stepOrder = ['step1', 'step2', 'step3', 'step4'] as const;
+  stepsInfos = signal<StepState[]>([
+    { index: 1, state: 'current' },
+    { index: 2, state: 'pending' },
+    { index: 3, state: 'pending' },
+    { index: 4, state: 'pending' },
+  ]);
 
-
-  currentStep = computed(() => {
-    const states = this.stepStates();
-    const current = Object.values(states).find(s => s.state === 'current');
-    return current ? current.index : 1;
-  });
+  currentStepIndex = signal<number>(1);
 
 
   constructor(
@@ -60,19 +58,6 @@ export class ProductCreationPage {
     private readonly productCreationService: ProductCreationService,
     private readonly productsStore: ProductsStore
   ) {
-
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntilDestroyed() // Automatically unsubscribe when the component is destroyed
-    ).subscribe((event: NavigationEnd) => {
-      this.handleNavigationEnd(event);
-    });
-  }
-
-  handleNavigationEnd(event: NavigationEnd) {
-    const url = event.urlAfterRedirects;
-    const stepSegment = url.split('/').pop();
-    const stepMap: Record<string, number> = ProductCreationPage.STEP_MAP;
   }
 
   handleBackNavigation() {
@@ -80,31 +65,20 @@ export class ProductCreationPage {
   }
 
 
-  private showError(message: string) {
-    this.snackBar.open(message, 'x', {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
-  }
-
-
-  goBack() {
-    if (this.currentStep() > 1) {
-      const previousStepIndex = this.currentStep() - 1 >= 1 ? this.currentStep() - 1 : 1;
-      const previousStep = Object.values(this.stepStates()).find(s => s.index === previousStepIndex);
-      this.stepStates.update(states => {
-        
-        return states;
-      });
-    } else {
-      this.router.navigate(['/admin/products']);
-    }
-  }
 
   goNext() {
-    switch (this.currentStep()) {
+    // If current step is already completed, just go to next step without any handling
+    const currentStep : StepState | undefined = this.stepsInfos().find(s => s.index === this.currentStepIndex());
+    if (currentStep!.state === 'completed') {
+      this.goNextStep();
+      this.showInfo('You have already completed this step. Moving to the next step.');
+      return;
+    }
+
+    switch (this.currentStepIndex()) {
       case 1:
-        this.handleNextFromStep1();
+        //this.handleNextFromStep1();
+        this.goNextStep();
         break;
       case 2:
         // handle step2
@@ -140,47 +114,101 @@ export class ProductCreationPage {
     this.productsStore.createProduct(name, categoryId!, price ,description).subscribe({
       next: (response) => {
         console.log('Product created successfully:', response);
-        this.stepStates.update(states => {
-          return {
-            ...states,
-            step1: { ...states.step1, state: 'completed' },
-            step2: { ...states.step2, state: 'current' },
-          };
-        });
+        this.showSuccess('Product created successfully.');
+        this.goNextStep();
       },
-      error: (error) => {
+      error: (error: ApiException) => {
         console.error('Error creating product:', error);
-        this.showError('Failed to create product. Please try again.');
+        this.handleCreateProductError(error);
       }
     });
    
   }
 
 
-
   private goNextStep() {
-    const nextStepIndex = this.currentStep() + 1;
+    const currentIndex = this.currentStepIndex();
+    const nextStepIndex = this.currentStepIndex() + 1;
     if (nextStepIndex > 4) return; // No more steps
-    this.stepStates.update(states => {
-      const newStates = { ...states };
-      for (const key of this.stepOrder) {
-        const step = newStates[key];
-        let stepStats = "peding" ;
-        if (step.state === 'completed') {
-          stepStats = 'completed';
+
+    // make current step completed 
+    // if next step is alredy completed do not change it's state to current
+    this.stepsInfos.update(states => {
+      const updatedStates : StepState[] = states.map(s => {
+        if (s.index === currentIndex && s.state !== 'completed') {
+          return { ...s, state: 'completed' };
+        } else if (s.index === nextStepIndex && s.state !== 'completed') {
+          return { ...s, state: 'current' };
         }
-        if (step.index < nextStepIndex) {
-          stepStats = 'completed';
-        } else if (step.index === nextStepIndex) {
-          stepStats = 'current';
-        }
-        newStates[key] = {
-          ...step,
-          state: stepStats as 'pending' | 'completed' | 'current'
-        };
-      }
-      return newStates;
-    })
+        return s;
+      });
+      return updatedStates;
+    });
+
+    this.currentStepIndex.set(nextStepIndex);
+
+
+    // handle navigation
+    const nextStepRoute = STEP_ROUTE_MAP[nextStepIndex];
+    this.router.navigate([nextStepRoute]);
   }
+
+
+  public goPreviousStep() {
+    const currentIndex = this.currentStepIndex();
+    if (currentIndex > 1) {
+      const previousStepIndex = currentIndex - 1;
+      const previousStep = this.stepsInfos().find(s => s.index === previousStepIndex);
+      if (previousStep) {
+        this.currentStepIndex.set(previousStepIndex);
+      } else {
+        console.error('Previous step not found');
+      }
+
+      // handle navigation
+      const previousStepRoute = STEP_ROUTE_MAP[previousStepIndex];
+      this.router.navigate([previousStepRoute]);
+    } else {
+      this.router.navigate(['/admin/products']);
+    }
+  }
+
+
+
+  private handleCreateProductError(error: ApiException) {
+    const userFriendlyMessage = CREATE_PRODUCT_ERROR_MAP[error.code];
+    if (userFriendlyMessage) {
+      this.showError(userFriendlyMessage);
+      return;
+    }
+    // fallback
+    this.showError(error.message || 'An unexpected error occurred.');
+  }
+
+
+  
+  private showError(message: string) {
+    this.snackBar.open(message, 'x', {
+      duration: 3000,
+      panelClass: ['error-snackbar'],
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+    });
+  }
+  private showInfo(message: string) {
+    this.snackBar.open(message, 'x', {
+      duration: 3000,
+      panelClass: ['info-snackbar']
+    });
+  }
+  private showSuccess(message: string) {
+    this.snackBar.open(message, 'x', {
+      duration: 3000,
+      panelClass: ['success-snackbar'],
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+    });
+  }
+
 
 }

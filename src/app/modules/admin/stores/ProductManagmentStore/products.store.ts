@@ -9,13 +9,13 @@ import { GetSelectableCategoriesSuccessResponseDTO } from "./apis/models/getSele
 import {
   Product,
   ProductVariant,
-  SelectableCategory,
-  mapSelectableCategoryDTOToSelectableCategory,
   mapProductDTOToProduct,
   mapProductVariantDTOToProductVariant,
   CreateProductDTO,
   CreateProductVariantDTO,
 } from "./models/product.model";
+
+import { SelectableCategory , mapSelectableCategoryDTOToSelectableCategory } from "./models/selectableCategories.model";
 import { ProductsState, SelectableCategoryState } from "./state/products.state";
 
 export const PRODUCTS_PORT = new InjectionToken<ProductsPort>("PRODUCTS_PORT");

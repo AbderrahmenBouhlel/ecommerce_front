@@ -3,7 +3,6 @@ import { Injectable } from "@angular/core";
 
 
 
-
 export interface VariantDraft {
   color_name: string;
   color_code: string;
@@ -53,8 +52,6 @@ export class ProductCreationService {
   getProductDraft(): ProductDraft {
     return this.productDraft;
   }
-
-
 
 
 

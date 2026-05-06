@@ -1,21 +1,8 @@
 export type ProductStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
-export interface ProductVariant {
-  id: string | number;
-  product_id: number;
-  color_name: string;
-  color_code: string;
-  createdAt: string;
-}
 
-export type SelectableCategoryGender = "MALE" | "FEMALE";
 
-export interface SelectableCategory {
-  id: number;
-  name: string;
-  gender: SelectableCategoryGender;
-  isActive: boolean;
-}
+
 
 export interface Product {
   id: number;
@@ -28,6 +15,30 @@ export interface Product {
   updatedAt?: string;
   variants: ProductVariant[];
 }
+
+
+
+export interface VariantImage {
+  id: string; // UUID
+  image_url: string;
+  order: number;
+}
+
+
+
+export interface ProductVariant {
+  id: string | number;
+  product_id: number;
+  color_name: string;
+  color_code: string;
+  images: VariantImage[];
+  createdAt: string;
+}
+
+
+
+
+
 
 // DTOs from API
 export interface CreateProductDTO {
@@ -76,28 +87,14 @@ export function mapProductDTOToProduct(dto: ProductDTO, variants: ProductVariant
   };
 }
 
-export function mapProductVariantDTOToProductVariant(dto: ProductVariantDTO): ProductVariant {
+export function mapProductVariantDTOToProductVariant(dto: ProductVariantDTO , images: VariantImage[] = []): ProductVariant {
   return {
     id: dto.id,
     product_id: dto.product_id,
     color_name: dto.color_name,
     color_code: dto.color_code,
+    images,
     createdAt: dto.createdAt,
   };
 }
 
-export interface SelectableCategoryDTO {
-  id: number;
-  name: string;
-  gender: SelectableCategoryGender;
-  isActive: boolean;
-}
-
-export function mapSelectableCategoryDTOToSelectableCategory(dto: SelectableCategoryDTO): SelectableCategory {
-  return {
-    id: dto.id,
-    name: dto.name,
-    gender: dto.gender,
-    isActive: dto.isActive,
-  };
-}

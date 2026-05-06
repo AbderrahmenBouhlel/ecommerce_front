@@ -11,6 +11,9 @@ import { CategoriesStore } from '../stores/CategoryManagementStore/categories.st
 import { ProductManagementPage } from '../features/product-managment/product-management-page/product-management-page';
 import { ProductCreationPage } from '../features/product-managment/product-creation-page/product-creation-page';
 import { Step1BasicInfoComponent } from '../features/product-managment/components/step1-basic-info-component/step1-basic-info-component';
+import { Step2VariantsCreationComponent } from '../features/product-managment/components/step2-variants-creation-component/step2-variants-creation-component';
+import { Step3SkusCreationComponent } from '../features/product-managment/components/step3-skus-creation-component/step3-skus-creation-component';
+import { Step4FilterValuesAttachementComponent } from '../features/product-managment/components/step4-filter-values-attachement-component/step4-filter-values-attachement-component';
 
 export const ADMIN_ROUTES: Routes = [
     {
@@ -46,7 +49,10 @@ export const ADMIN_ROUTES: Routes = [
                 component: ProductCreationPage,
                 children: [
                     {path: '', redirectTo: 'step-1', pathMatch: 'full'},
-                    {path: 'step-1', component: Step1BasicInfoComponent}
+                    {path: 'step-1', component: Step1BasicInfoComponent},
+                    {path: 'step-2', component: Step2VariantsCreationComponent},
+                    {path: 'step-3', component: Step3SkusCreationComponent},
+                    {path: 'step-4', component: Step4FilterValuesAttachementComponent}
                 ]
             }
 

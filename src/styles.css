@@ -24,3 +24,24 @@ html, body{
   background: #dc2626 !important;
   color: white !important;
 }
+
+
+/* Style the action button ("x") */
+ .mdc-button {
+  color: white !important;
+  font-weight: bold;
+  min-width: auto;
+  padding: 0 8px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.mdc-button:hover {
+  opacity: 1;
+}
+
+/* Remove weird uppercase + spacing */
+.mdc-button__label {
+  text-transform: none;
+  font-size: 16px;
+}

@@ -1,7 +1,7 @@
 import { Component, computed, forwardRef, inject, input, Input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ProductsStore } from '../../../../../modules/admin/stores/ProductManagmentStore/products.store';
-import { SelectableCategory } from '../../../../../modules/admin/stores/ProductManagmentStore/models/product.model';
+import { SelectableCategory } from '../../../../../modules/admin/stores/ProductManagmentStore/models/selectableCategories.model';
 
   
 @Component({

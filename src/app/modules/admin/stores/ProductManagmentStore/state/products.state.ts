@@ -1,4 +1,5 @@
-import { Product, SelectableCategory } from "../models/product.model";
+import { Product } from "../models/product.model";
+import { SelectableCategory } from "../models/selectableCategories.model";
 
 export interface ProductsState {
   items: Product[];
