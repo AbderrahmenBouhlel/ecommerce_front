@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="p-2 mb-4">
     <h2 class="text-xl font-bold text-slate-800">Colors & Photos</h2>
-    <p class="text-sm text-slate-500">Add color variants for <span class="font-semibold">ad</span></p>
+    <p class="text-sm text-slate-500">Add color variants for <span class="font-semibold">{{ productCreationService.getBasicInfo()?.name || 'Product' }}</span></p>
   </div>
 
   <div class="flex flex-1 min-h-125">
@@ -26,8 +26,8 @@
           <div 
             (click)="selectVariant(variant)"
             class="relative p-3 border-2 rounded-xl cursor-pointer shadow-sm group transition-all"
-            [class.border-indigo-600]="selectedVariant() && selectedVariant()?.uuid === variant.uuid"
-            [class.border-gray-300]="!selectedVariant() || selectedVariant()?.uuid !== variant.uuid"
+            [class.border-indigo-600]="selectedVariant() && selectedVariant()?.id === variant.id"
+            [class.border-gray-300]="!selectedVariant() || selectedVariant()?.id !== variant.id"
           >
           
             <div class="flex items-center gap-3">
@@ -139,7 +139,7 @@
           <!-- Section: Product Photos Header -->
           <div class="flex justify-between items-end mb-4">
             <h3 class="font-bold text-slate-800">Product Photos</h3>
-            <span class="text-xs font-medium text-slate-400">0/6 photos</span>
+            <span class="text-xs font-medium text-slate-400">{{variant.images.length}}/6 photos</span>
           </div>
 
           <!-- Photo Grid / Upload Area -->
@@ -212,10 +212,28 @@
             </svg>
             <span>Click <span class="font-bold">☆</span> to set a photo as the variant's cover image</span>
           </div>
-
         </div>
       }
      
     </div>
   </div>
+</div>
+
+
+
+<div class="flex justify-between gap-3 pt-6 border-t border-t-gray-200">
+  <button 
+    (click)="previous()"
+    class="px-6 py-2 text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-all"
+  >
+    Back to Catalog
+  </button>
+
+  <button 
+    (click)="next()"
+    [disabled]="isLoading()"
+    class="px-6 py-2 ml-auto bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+  >
+    {{ isLoading() ? 'Creating...' : 'Next: Add skus' }}
+  </button>
 </div>

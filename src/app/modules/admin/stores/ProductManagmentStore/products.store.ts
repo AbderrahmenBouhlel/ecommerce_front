@@ -3,17 +3,17 @@ import { ApiException } from "../../../../core/shared/api/api.responseTypes";
 import { LoadState } from "../../../../core/shared/state/load-state";
 import { Observable, catchError, map } from "rxjs";
 import { ProductsPort } from "./apis/ProductsPort.port";
-import { CreateProductSuccessResponseDTO } from "./apis/models/createProduct.api";
-import { CreateProductVariantSuccessResponseDTO } from "./apis/models/createProductVariant.api";
+import { CreateProductSuccessResponseDTO ,CreateProductRequestDTO} from "./apis/models/createProduct.api";
+import { CreateProductVariantSuccessResponseDTO , CreateProductVariantRequestDTO } from "./apis/models/createProductVariant.api";
+
 import { GetSelectableCategoriesSuccessResponseDTO } from "./apis/models/getSelectableCategories.api";
 import {
+  mapCreateProductDTOToProduct,
+  mapCreateProductVariantDTOToProductVariant,
   Product,
   ProductVariant,
-  mapProductDTOToProduct,
-  mapProductVariantDTOToProductVariant,
-  CreateProductDTO,
-  CreateProductVariantDTO,
 } from "./models/product.model";
+
 
 import { SelectableCategory , mapSelectableCategoryDTOToSelectableCategory } from "./models/selectableCategories.model";
 import { ProductsState, SelectableCategoryState } from "./state/products.state";
@@ -40,7 +40,7 @@ export class ProductsStore {
   constructor(@Inject(PRODUCTS_PORT) private readonly productsPort: ProductsPort) {}
 
   createProduct(name: string, categoryId: number, price: number, description?: string): Observable<Product> {
-    const productDto: CreateProductDTO = {
+    const productDto: CreateProductRequestDTO = {
       name,
       description: description || "",
       price,
@@ -49,7 +49,7 @@ export class ProductsStore {
 
     return this.productsPort.createProduct(productDto).pipe(
       map((response: CreateProductSuccessResponseDTO) => {
-        const createdProduct: Product = mapProductDTOToProduct(response.data);
+        const createdProduct: Product = mapCreateProductDTOToProduct(response.data);
 
         this.setProducts([...this.productsState().items, createdProduct]);
 
@@ -62,29 +62,30 @@ export class ProductsStore {
     );
   }
 
-  createProductVariant(productId: number, colorName: string, colorCode: string): Observable<ProductVariant> {
-    const variantDto: CreateProductVariantDTO = {
+  createProductVariant(productId: number, colorName: string, colorCode: string, images: File[]): Observable<ProductVariant> {
+    const variantDto: CreateProductVariantRequestDTO = {
       color_name: colorName,
       color_code: colorCode,
+      images,
     };
 
     return this.productsPort.createProductVariant(productId, variantDto).pipe(
       map((response: CreateProductVariantSuccessResponseDTO) => {
-        const createdVariant: ProductVariant = mapProductVariantDTOToProductVariant(response.data);
+        const createdVariant: ProductVariant = mapCreateProductVariantDTOToProductVariant(response.data);
 
         // Add variant to the product in state
-        const updatedItems = this.productsState().items.map((item: Product) => {
-          if (item.id !== productId) {
-            return item;
+        const updatedProducts = this.productsState().items.map((product: Product) => {
+          if (product.id !== productId) {
+            return product;
           }
 
           return {
-            ...item,
-            variants: [...item.variants, createdVariant],
+            ...product,
+            variants: [...product.variants, createdVariant],
           };
         });
 
-        this.setProducts(updatedItems);
+        this.setProducts(updatedProducts);
 
         return createdVariant;
       }),
@@ -94,6 +95,7 @@ export class ProductsStore {
       }),
     );
   }
+
 
   loadSelectableCategories(): Observable<SelectableCategory[]> {
     this.loadState.set({ status: "loading" });
@@ -111,6 +113,7 @@ export class ProductsStore {
       }),
     );
   }
+
 
   private setProducts(products: Product[]): void {
     this.productsState.set({ items: products });

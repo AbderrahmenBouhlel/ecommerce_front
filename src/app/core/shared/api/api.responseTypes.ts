@@ -140,6 +140,28 @@ export class DuplicateColorNameInProductException extends ApiException {
   }
 }
 
+export class UnsupportedVariantImageContentTypeException extends ApiException {
+  constructor(code: string, message: string) {
+    super(400, code, message);
+    this.name = "UnsupportedVariantImageContentTypeException";
+  }
+}
+
+export class VariantImagesSizeLimitExceededException extends ApiException {
+  constructor(code: string, message: string) {
+    super(413, code, message);
+    this.name = "VariantImagesSizeLimitExceededException";
+  }
+}
+
+
+export class ResourceNotFoundException extends ApiException {
+  constructor(code: string, message: string) {
+    super(404, code, message);
+    this.name = "ResourceNotFoundException";
+  }
+}
+
 
 
 

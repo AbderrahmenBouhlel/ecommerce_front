@@ -1,3 +1,8 @@
+import { CreateProductDataDTO } from "../apis/models/createProduct.api";
+import { CreateProductVariantDataDTO } from "../apis/models/createProductVariant.api";
+
+
+    
 export type ProductStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
 
@@ -19,7 +24,7 @@ export interface Product {
 
 
 export interface VariantImage {
-  id: string; // UUID
+  id: number;
   image_url: string;
   order: number;
 }
@@ -27,7 +32,7 @@ export interface VariantImage {
 
 
 export interface ProductVariant {
-  id: string | number;
+  id:  number;
   product_id: number;
   color_name: string;
   color_code: string;
@@ -40,40 +45,8 @@ export interface ProductVariant {
 
 
 
-// DTOs from API
-export interface CreateProductDTO {
-  name: string;
-  description: string;
-  price: number;
-  categoryId: number;
-}
-
-export interface CreateProductVariantDTO {
-  color_name: string;
-  color_code: string;
-}
-
-export interface ProductDTO {
-  id: number;
-  status: ProductStatus;
-  name: string;
-  description: string;
-  price: number;
-  categoryId: number;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface ProductVariantDTO {
-  id: string | number;
-  product_id: number;
-  color_name: string;
-  color_code: string;
-  createdAt: string;
-}
-
 // Mappers
-export function mapProductDTOToProduct(dto: ProductDTO, variants: ProductVariant[] = []): Product {
+export function mapCreateProductDTOToProduct(dto: CreateProductDataDTO, variants: ProductVariant[] = []): Product {
   return {
     id: dto.id,
     status: dto.status,
@@ -82,18 +55,17 @@ export function mapProductDTOToProduct(dto: ProductDTO, variants: ProductVariant
     price: dto.price,
     categoryId: dto.categoryId,
     createdAt: dto.createdAt,
-    updatedAt: dto.updatedAt,
     variants,
   };
 }
 
-export function mapProductVariantDTOToProductVariant(dto: ProductVariantDTO , images: VariantImage[] = []): ProductVariant {
+export function mapCreateProductVariantDTOToProductVariant(dto: CreateProductVariantDataDTO, images: VariantImage[] = []): ProductVariant {
   return {
     id: dto.id,
     product_id: dto.product_id,
     color_name: dto.color_name,
     color_code: dto.color_code,
-    images,
+    images: dto.images ?? images,
     createdAt: dto.createdAt,
   };
 }

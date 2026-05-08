@@ -12,14 +12,14 @@
     <!-- Step 1 -->
     <div class="flex items-center gap-3 shrink-0">
       <div [ngClass]="{
-        'bg-indigo-600 text-white': currentStepIndex() === 1,
-        'bg-indigo-100 text-indigo-600': currentStepIndex() > 1,
-        'bg-gray-100 text-gray-500': currentStepIndex() < 1
+        'bg-indigo-600 text-white': currentStep() === 1,
+        'bg-indigo-100 text-indigo-600': currentStep() > 1,
+        'bg-gray-100 text-gray-500': currentStep() < 1
       }" class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all">
         1
       </div>
       <div class="flex flex-col">
-        <span [class.text-indigo-600]="currentStepIndex() >= 1" class="text-sm font-semibold text-gray-400">General Info</span>
+        <span [class.text-indigo-600]="currentStep() >= 1" class="text-sm font-semibold text-gray-400">General Info</span>
         <span class="text-xs text-gray-400">Step 1</span>
       </div>
     </div>
@@ -29,14 +29,14 @@
     <!-- Step 2 -->
     <div class="flex items-center gap-3 shrink-0">
       <div [ngClass]="{
-        'bg-indigo-600 text-white': currentStepIndex() === 2,
-        'bg-indigo-100 text-indigo-600': currentStepIndex() > 2,
-        'bg-gray-100 text-gray-500': currentStepIndex() < 2
+        'bg-indigo-600 text-white': currentStep() === 2,
+        'bg-indigo-100 text-indigo-600': currentStep() > 2,
+        'bg-gray-100 text-gray-500': currentStep() < 2
       }" class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all">
         2
       </div>
       <div class="flex flex-col">
-        <span [class.text-indigo-600]="currentStepIndex() >= 2" class="text-sm font-semibold text-gray-400">Colors & Photos</span>
+        <span [class.text-indigo-600]="currentStep() >= 2" class="text-sm font-semibold text-gray-400">Colors & Photos</span>
         <span class="text-xs text-gray-400">Step 2</span>
       </div>
     </div>
@@ -46,14 +46,14 @@
     <!-- Step 3 -->
     <div class="flex items-center gap-3 shrink-0">
       <div [ngClass]="{
-        'bg-indigo-600 text-white': currentStepIndex() === 3,
-        'bg-indigo-100 text-indigo-600': currentStepIndex() > 3,
-        'bg-gray-100 text-gray-500': currentStepIndex() < 3
+        'bg-indigo-600 text-white': currentStep() === 3,
+        'bg-indigo-100 text-indigo-600': currentStep() > 3,
+        'bg-gray-100 text-gray-500': currentStep() < 3
       }" class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all">
         3
       </div>
       <div class="flex flex-col">
-        <span [class.text-indigo-600]="currentStepIndex() >= 3" class="text-sm font-semibold text-gray-400">Sizes & Inventory</span>
+        <span [class.text-indigo-600]="currentStep() >= 3" class="text-sm font-semibold text-gray-400">Sizes & Inventory</span>
         <span class="text-xs text-gray-400">Step 3</span>
       </div>
     </div>
@@ -63,14 +63,14 @@
     <!-- Step 4 -->
     <div class="flex items-center gap-3 shrink-0">
       <div [ngClass]="{
-        'bg-indigo-600 text-white': currentStepIndex() === 4,
-        'bg-indigo-100 text-indigo-600': currentStepIndex() > 4,
-        'bg-gray-100 text-gray-500': currentStepIndex() < 4
+        'bg-indigo-600 text-white': currentStep() === 4,
+        'bg-indigo-100 text-indigo-600': currentStep() > 4,
+        'bg-gray-100 text-gray-500': currentStep() < 4
       }" class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all">
         4
       </div>
       <div class="flex flex-col">
-        <span [class.text-indigo-600]="currentStepIndex() >= 4" class="text-sm font-semibold text-gray-400">Attributes</span>
+        <span [class.text-indigo-600]="currentStep() >= 4" class="text-sm font-semibold text-gray-400">Attributes</span>
         <span class="text-xs text-gray-400">Step 4</span>
       </div>
     </div>
@@ -83,8 +83,11 @@
       <router-outlet></router-outlet>
   </div>
 
+</div>
 
-  <!-- Navigation Footer -->
+
+
+<!-- 
   <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-8">
     <button 
       (click)="goPreviousStep()"
@@ -97,8 +100,5 @@
       (click)="goNext()"
       class="px-8 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-200 cursor-pointer transition-all">
       {{ currentStepIndex() === 4 ? 'Finish' : 'Next Step' }}
-    </button>
-  </div>
-
-
-</div>
+    </button> 
+  </div> -->

@@ -5,6 +5,7 @@ import { Observable, catchError } from "rxjs";
 import { ApiError, ApiException, normolizeToApiError } from "../../../../../core/shared/api/api.responseTypes";
 import { CreateProductRequestDTO, CreateProductSuccessResponseDTO, mapCreateProductError } from "./models/createProduct.api";
 import { CreateProductVariantRequestDTO, CreateProductVariantSuccessResponseDTO, mapCreateProductVariantError } from "./models/createProductVariant.api";
+
 import { GetSelectableCategoriesSuccessResponseDTO, mapGetSelectableCategoriesError } from "./models/getSelectableCategories.api";
 
 @Injectable()
@@ -24,9 +25,17 @@ export class ProductsAdapter implements ProductsPort {
   }
 
   createProductVariant(productId: number, body: CreateProductVariantRequestDTO): Observable<CreateProductVariantSuccessResponseDTO> {
+    const formData = new FormData();
+    formData.append("color_name", body.color_name);
+    formData.append("color_code", body.color_code);
+
+    body.images.forEach((image: File) => {
+      formData.append("images", image);
+    });
+
     return this.http.post<CreateProductVariantSuccessResponseDTO>(
       `${this.baseUrl}/products/${productId}/variants`,
-      body,
+      formData,
     ).pipe(
       catchError((error: unknown) => {
         const apiError: ApiError = normolizeToApiError(error);
@@ -35,6 +44,7 @@ export class ProductsAdapter implements ProductsPort {
       }),
     );
   }
+
 
   getSelectableCategories(): Observable<GetSelectableCategoriesSuccessResponseDTO> {
     return this.http.get<GetSelectableCategoriesSuccessResponseDTO>(`${this.baseUrl}/categories/select`).pipe(
