@@ -4,12 +4,10 @@ import { FormGroup } from '@angular/forms';
 import { FormControl } from '@angular/forms';
 import { CategoriesDropdown } from '../../../../../../core/shared/ui/dropdown/categories-dropdown/categories-dropdown';
 import { OnInit } from '@angular/core';
-import { ProductCreationService, BasicProductInfo} from '../../services/ProductCreationService';
+import { ProductCreationService} from '../../services/ProductCreationService';
 import { Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ProductsStore } from '../../../../stores/ProductManagmentStore/products.store';
-import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiException } from '../../../../../../core/shared/api/api.responseTypes';
 import { Product } from '../../../../stores/ProductManagmentStore/models/product.model';
 import { NotificationService } from '../../../../../../core/shared/service/NotificaitonService';
@@ -96,10 +94,6 @@ export class Step1BasicInfoComponent implements OnInit {
    * Submit basic product info, create product in backend, and navigate to step 2
    */
   next(): void {
-    this.productCreationService.goNextStep();
-    return ;
-
-    
     // 1: check if the step alredy done and if yes, prevent resubmission and navigate to next step
     if (this.isStepAlreadySubmitted){
       this.notifcationService.showError('You have already submitted this step. Please proceed to the next step.');
@@ -123,6 +117,7 @@ export class Step1BasicInfoComponent implements OnInit {
       next: (product: Product) => {
         // Update service so step 2+ can access the created product ID
         this.productCreationService.onSuccessfulBasicInfoSubmission(product);
+        this.productCreationService.goNextStep();
         this.notifcationService.showSuccess('Product created successfully.');
         this.isLoading.set(false);
       },

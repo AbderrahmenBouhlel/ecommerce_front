@@ -1,6 +1,7 @@
 import { Component, inject, Signal, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ProductCreationService, VariantDraft } from '../services/ProductCreationService';
+import { ProductCreationService } from '../services/ProductCreationService';
+import { VariantDraft } from '../services/ProductCreationService.types';
 import { Router } from '@angular/router';
 import { catchError, filter, forkJoin, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';

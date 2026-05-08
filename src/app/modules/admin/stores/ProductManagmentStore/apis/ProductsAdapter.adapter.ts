@@ -7,6 +7,7 @@ import { CreateProductRequestDTO, CreateProductSuccessResponseDTO, mapCreateProd
 import { CreateProductVariantRequestDTO, CreateProductVariantSuccessResponseDTO, mapCreateProductVariantError } from "./models/createProductVariant.api";
 
 import { GetSelectableCategoriesSuccessResponseDTO, mapGetSelectableCategoriesError } from "./models/getSelectableCategories.api";
+import { CreateProductVariantSkusRequestDTO, CreateProductVariantSkusSuccessResponseDTO, mapCreateProductVariantSkusError } from "./models/createProductVariantSkus.api";
 
 @Injectable()
 export class ProductsAdapter implements ProductsPort {
@@ -19,6 +20,19 @@ export class ProductsAdapter implements ProductsPort {
       catchError((error: unknown) => {
         const apiError: ApiError = normolizeToApiError(error);
         const apiException: ApiException = mapCreateProductError(apiError);
+        throw apiException;
+      }),
+    );
+  }
+
+  createProductVariantSkus(variantId: number, body: CreateProductVariantSkusRequestDTO): Observable<CreateProductVariantSkusSuccessResponseDTO> {
+    return this.http.post<CreateProductVariantSkusSuccessResponseDTO>(
+      `${this.baseUrl}/variants/${variantId}/skus`,
+      body,
+    ).pipe(
+      catchError((error: unknown) => {
+        const apiError: ApiError = normolizeToApiError(error);
+        const apiException: ApiException = mapCreateProductVariantSkusError(apiError);
         throw apiException;
       }),
     );

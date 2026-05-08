@@ -7,12 +7,15 @@ import { CreateProductSuccessResponseDTO ,CreateProductRequestDTO} from "./apis/
 import { CreateProductVariantSuccessResponseDTO , CreateProductVariantRequestDTO } from "./apis/models/createProductVariant.api";
 
 import { GetSelectableCategoriesSuccessResponseDTO } from "./apis/models/getSelectableCategories.api";
+import { CreateProductVariantSkusRequestDTO, CreateProductVariantSkusSuccessResponseDTO } from "./apis/models/createProductVariantSkus.api";
 import {
   mapCreateProductDTOToProduct,
   mapCreateProductVariantDTOToProductVariant,
   Product,
   ProductVariant,
 } from "./models/product.model";
+
+import { VariantSku } from "./models/product.model";
 
 
 import { SelectableCategory , mapSelectableCategoryDTOToSelectableCategory } from "./models/selectableCategories.model";
@@ -88,6 +91,30 @@ export class ProductsStore {
         this.setProducts(updatedProducts);
 
         return createdVariant;
+      }),
+      catchError((err: ApiException) => {
+        this.loadState.set({ status: "error", error: err.message });
+        throw err;
+      }),
+    );
+  }
+
+  createProductVariantSkus(variantId: number, skus: { size: string; stock: number }[]): Observable<VariantSku[]> {
+    const body: CreateProductVariantSkusRequestDTO = { skus };
+
+    return this.productsPort.createProductVariantSkus(variantId, body).pipe(
+      map((response: CreateProductVariantSkusSuccessResponseDTO) => {
+        // Map DTO to local VariantSku model (keep reserved/sku_code if needed elsewhere)
+        const created: VariantSku[] = response.data.map(d => ({ id: d.id, size: d.size, stock: d.stock }));
+
+        // update local product state to include these skus on the variant
+        const updatedProducts = this.productsState().items.map((product: Product) => ({
+          ...product,
+          variants: product.variants.map(v => v.id === variantId ? { ...v, skus: [...v.skus, ...created] } : v)
+        }));
+        this.setProducts(updatedProducts);
+
+        return created;
       }),
       catchError((err: ApiException) => {
         this.loadState.set({ status: "error", error: err.message });

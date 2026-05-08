@@ -119,13 +119,21 @@ export class CategoryInactiveException extends ApiException {
 
 
 
-
+// product realted exceptions
 export class ProductNotFoundException extends ApiException {
   constructor(code: string, message: string) {
     super(404, code, message);
     this.name = "ProductNotFoundException";
   }
 }
+
+export class ProductArchivedException extends ApiException {
+  constructor(code: string, message: string) {
+    super(409, code, message);
+    this.name = "ProductArchivedException";
+  }
+}
+
 export class ProductDuplicateNameException extends ApiException {
   constructor(code: string, message: string) {
     super(409, code, message);
@@ -139,6 +147,21 @@ export class DuplicateColorNameInProductException extends ApiException {
     this.name = "DuplicateColorNameInProductException";
   }
 }
+
+export class DuplicateSizeInVariantException extends ApiException {
+  constructor(code: string, message: string) {
+    super(409, code, message);
+    this.name = "DuplicateSizeInVariantException";
+  }
+}
+
+export class VariantNotFoundException extends ApiException {
+  constructor(code: string, message: string) {
+    super(404, code, message);
+    this.name = "VariantNotFoundException";
+  }
+}
+
 
 export class UnsupportedVariantImageContentTypeException extends ApiException {
   constructor(code: string, message: string) {
@@ -161,6 +184,8 @@ export class ResourceNotFoundException extends ApiException {
     this.name = "ResourceNotFoundException";
   }
 }
+
+
 
 
 

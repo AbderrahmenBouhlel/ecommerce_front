@@ -1,8 +1,9 @@
-import { Component, effect, inject, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { FormGroup, FormControl, ɵInternalFormsSharedModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { ProductCreationService, VariantDraftImage, VariantDraft } from '../../services/ProductCreationService';
+import { ProductCreationService } from '../../services/ProductCreationService';
+import { VariantDraft , VariantDraftImage } from '../../services/ProductCreationService.types';
 import { ProductsStore } from '../../../../stores/ProductManagmentStore/products.store';
 import { ProductVariant } from '../../../../stores/ProductManagmentStore/models/product.model';
 import { NotificationService } from '../../../../../../core/shared/service/NotificaitonService';
@@ -32,10 +33,20 @@ export class Step2VariantsCreationComponent {
   public SUPPORTED_IMAGE_TYPES = ["image/jpeg", "image/png" , "image/jpg"];
 
   
-  variants = signal<VariantDraft[]>([]);
-  selectedVariant: WritableSignal<VariantDraft | null> = signal(null);
+
+  readonly variants: Signal<VariantDraft[]> = computed(() => {
+    return this.productCreationService.variantsState$().items
+  });
+
+  readonly selectedVariantId = signal<number|null>(this.variants()[0]?.id ?? null);
+
+  readonly selectedVariant = computed(() => {
+    return this.variants().find(v => v.id === this.selectedVariantId()) || null;
+  });
+
 
   
+
   variantAddForm = new FormGroup({
     color_name: new FormControl('', Validators.required),
     color_code: new FormControl('#000000', Validators.required),
@@ -43,16 +54,7 @@ export class Step2VariantsCreationComponent {
   
   isAddFormVisible: WritableSignal<boolean> = signal(false);
 
-
   isLoading = signal(false);
-
-  constructor() {
-    effect(()=>{
-      const variants = this.variants();
-      this.productCreationService.setVariants(variants);
-    })
-  }
-
 
 
 
@@ -90,33 +92,31 @@ export class Step2VariantsCreationComponent {
       id: Date.now(), // Generate a unique ID for the new variant
       color_name: this.variantAddForm.value.color_name!,
       color_code: this.variantAddForm.value.color_code!,
-      images: [] // Image handling can be implemented later
+      images: [] ,
+      skus: []
     };
 
-    this.variants.update(variants => [...variants, newVariant]);  
+    this.productCreationService.addVariant(newVariant); 
+    this.selectedVariantId.set(newVariant.id);
+
     this.hideAddVariantForm();
-    this.selectedVariant.set(newVariant);
+   
   }
 
 
 
   // left section: select and delete variant logic
   selectVariant(variant: VariantDraft) {
-    this.selectedVariant.set(variant);
+    this.selectedVariantId.set(variant.id);
   }
 
   deleteVariant(variant: VariantDraft) {
     const selected = this.selectedVariant();
 
     // clean up object URLs to prevent memory leaks
-    for (let image of variant.images) {
-      URL.revokeObjectURL(image.url);
-    }
-
-    this.variants.update(variants => variants.filter(v => v.id !== variant.id));
+    this.productCreationService.deleteVariant(variant.id);
     if (selected && selected.id === variant.id) {
-      this.selectedVariant.set(null);
-      console.log(this.selectedVariant())
+      this.selectedVariantId.set(null);
     }
   }
 
@@ -144,8 +144,8 @@ export class Step2VariantsCreationComponent {
         ...selected,
         images: [...selected.images, newImage]
       };
-      this.selectedVariant.set(updatedVariant);
-      this.variants.update(variants => variants.map(v => v.id === updatedVariant.id  ? updatedVariant : v));
+      this.selectedVariantId.set(updatedVariant.id);
+      this.productCreationService.updateVariant(updatedVariant.id, { images: updatedVariant.images });
     }
   }
 
@@ -160,8 +160,7 @@ export class Step2VariantsCreationComponent {
       ...selected,
       images: images
     };
-    this.selectedVariant.set(updatedVariant);
-    this.variants.update(variants => variants.map(v => v.id === updatedVariant.id  ? updatedVariant : v));
+    this.productCreationService.updateVariant(updatedVariant.id, { images: updatedVariant.images });
   }
 
   removePhoto(variant: VariantDraft, image: VariantDraftImage) {
@@ -170,11 +169,11 @@ export class Step2VariantsCreationComponent {
       ...variant,
       images: updatedImages
     };
-    this.variants.update(variants => variants.map(v => v.id === updatedVariant.id ? updatedVariant : v));
+    this.productCreationService.updateVariant(variant.id, { images: updatedImages });
 
     // if the removed image belongs to the currently selected variant, update it as well
     if (this.selectedVariant()?.id === variant.id) {
-      this.selectedVariant.set(updatedVariant);
+      this.selectedVariantId.set(updatedVariant.id);
     }
 
     // clean up object URL to prevent memory leaks
@@ -190,78 +189,73 @@ export class Step2VariantsCreationComponent {
   // next / previous 
   next(): void {
 
-    this.productCreationService.goNextStep();
-    return ;
+    if (this.isLoading()) {
+      return;
+    }
+    const basicInfo = this.productCreationService.getBasicInfo();
+    const variantsDraft = this.variants();
 
-    
-    // if (this.isLoading()) {
-    //   return;
-    // }
+    if (!basicInfo?.submitted || !basicInfo.id) {
+      this.notificationService.showError('Please complete the basic product information first.');
+      this.productCreationService.goPreviousStep();
+      return;
+    }
 
-    // const basicInfo = this.productCreationService.getBasicInfo();
-    // const variantsDraft = this.variants();
+    if (!variantsDraft.length) {
+      this.notificationService.showError('Please add at least one variant before proceeding.');
+      return;
+    }
 
-    // if (!basicInfo?.submitted || !basicInfo.id) {
-    //   this.notificationService.showError('Please complete the basic product information first.');
-    //   this.productCreationService.goPreviousStep();
-    //   return;
-    // }
+    this.isLoading.set(true);
 
-    // if (!variantsDraft.length) {
-    //   this.notificationService.showError('Please add at least one variant before proceeding.');
-    //   return;
-    // }
+    const requests: Observable<VariantSubmissionResult>[] = variantsDraft.map((variant) => {
+      const files = variant.images
+        .map((image) => image.image)
+        .filter((file): file is File => file !== null);
 
-    // this.isLoading.set(true);
+      return this.productsStore.createProductVariant(basicInfo.id,variant.color_name,variant.color_code,files,).pipe(
+        map((createdVariant) => ({
+          success: true,
+          variantDraft: variant,
+          createdVariant,
+        })),
+        catchError((error: unknown) => of({
+          success: false,
+          variantDraft: variant,
+          error,
+        })),
+      );
+    });
 
-    // const requests: Observable<VariantSubmissionResult>[] = variantsDraft.map((variant) => {
-    //   const files = variant.images
-    //     .map((image) => image.image)
-    //     .filter((file): file is File => file !== null);
+    forkJoin(requests).subscribe({
+      next: (results) => {
+        const successfulResults = results.filter((result) => result.success && result.createdVariant);
+        const failedResults = results.filter((result) => !result.success);
 
-    //   return this.productsStore.createProductVariant(basicInfo.id,variant.color_name,variant.color_code,files,).pipe(
-    //     map((createdVariant) => ({
-    //       success: true,
-    //       variantDraft: variant,
-    //       createdVariant,
-    //     })),
-    //     catchError((error: unknown) => of({
-    //       success: false,
-    //       variantDraft: variant,
-    //       error,
-    //     })),
-    //   );
-    // });
+        if (successfulResults.length > 0) {
+          this.productCreationService.onSuccessfulVariantSubmission(
+            successfulResults.map((result) => result.createdVariant!),
+          );
 
-    // forkJoin(requests).subscribe({
-    //   next: (results) => {
-    //     const successfulResults = results.filter((result) => result.success && result.createdVariant);
-    //     const failedResults = results.filter((result) => !result.success);
+          // clean up object URLs for successfully created variants to prevent memory leaks
+          this.revokeObjectUrls(variantsDraft);
+          this.notificationService.showSuccess(`${successfulResults.length}/${variantsDraft.length} variants generated successfully.`);
+          this.isLoading.set(false);
+          this.productCreationService.goNextStep();
 
-    //     if (successfulResults.length > 0) {
-    //       this.productCreationService.onSuccessfulVariantSubmission(
-    //         successfulResults.map((result) => result.createdVariant!),
-    //       );
+          return;
+        }
 
-    //       // clean up object URLs for successfully created variants to prevent memory leaks
-    //       this.revokeObjectUrls(variantsDraft);
-    //       this.notificationService.showSuccess(`${successfulResults.length}/${variantsDraft.length} variants generated successfully.`);
-    //       this.isLoading.set(false);
-    //       this.productCreationService.goNextStep();
-
-    //       return;
-    //     }
-
-    //     this.notificationService.showError(
-    //       `Failed to create any variants. You can update the  drafts in Colors & Photos. and try submitting again.`,
-    //     );
-    //     this.isLoading.set(false);
-    //   },
-    //   error: () => {
-    //     this.isLoading.set(false);
-    //     this.notificationService.showError('Unexpected error occurred while creating variants.');
-    //   },
-    // });
+        this.notificationService.showError(
+          `Failed to create any variants. You can update the  drafts in Colors & Photos. and try submitting again.`,
+        );
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+        this.notificationService.showError('Unexpected error occurred while creating variants.');
+      },
+    });
   }
 
   previous(): void {

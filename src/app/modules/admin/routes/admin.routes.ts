@@ -48,7 +48,7 @@ export const ADMIN_ROUTES: Routes = [
                 path: 'products/new',
                 component: ProductCreationPage,
                 children: [
-                    {path: '', redirectTo: 'step-1', pathMatch: 'full'},
+                    {path: '', redirectTo: 'step-4', pathMatch: 'full'},
                     {path: 'step-1', component: Step1BasicInfoComponent},
                     {path: 'step-2', component: Step2VariantsCreationComponent},
                     {path: 'step-3', component: Step3SkusCreationComponent},

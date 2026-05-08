@@ -1,16 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from '@angular/core';
+import { ProductCreationService} from '../../services/ProductCreationService';
+import { VariantDraft , VariantSku  ,Result} from '../../services/ProductCreationService.types';
+import { NotificationService } from '../../../../../../core/shared/service/NotificaitonService';
+import { ProductsStore } from '../../../../stores/ProductManagmentStore/products.store';
+import { map, of , catchError, forkJoin , Observable} from 'rxjs';
 
-type SizeRow = {
-  id: number;
-  size: string;
-  physicalStock: string;
-};
-
-type VariantTab = {
-  id: number;
-  colorName: string;
-  colorCode: string;
-  rows: SizeRow[];
+type VariantSkusSubmissionResult = {
+  success: boolean;
+  variantId: number;
+  createdSkus?: VariantSku[];
+  error?: unknown;
 };
 
 @Component({
@@ -21,98 +20,138 @@ type VariantTab = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Step3SkusCreationComponent {
+  private productStore = inject(ProductsStore); 
+  private productCreationService = inject(ProductCreationService);
+  private notificationService = inject(NotificationService);
 
-  readonly variants = signal<VariantTab[]>([
-    {
-      id: 1,
-      colorName: 'midnight',
-      colorCode: '#111827',
-      rows: [],
-    },
-    {
-      id: 2,
-      colorName: 'sand',
-      colorCode: '#d6b48c',
-      rows: [],
-    },
-  ]);
+  readonly variants: Signal<VariantDraft[]> = computed(() => {
+    return this.productCreationService.variantsState$().items
+  });
 
-  readonly selectedVariantId = signal<number>(1);
+  readonly selectedVariantId = signal<number>(this.variants()[0]?.id ?? 0);
 
   readonly selectedVariant = computed(() => {
-    const selectedId = this.selectedVariantId();
-    return this.variants().find((variant) => variant.id === selectedId) ?? null;
+    console.log(this.variants())
+    return this.variants().find(v => v.id === this.selectedVariantId()) || null;
   });
+
+
+
+  isLoading = signal(false);
+
 
   selectVariant(variantId: number): void {
     this.selectedVariantId.set(variantId);
   }
 
-  addSizeRow(): void {
+  addNewSkuRow(): void {
     const selectedVariant = this.selectedVariant();
     if (!selectedVariant) {
       return;
     }
 
-    const newRow: SizeRow = {
-      id: Date.now(),
+    const newSku :VariantSku = {
+      id: Date.now(), // Unique ID for the SKU
       size: '',
-      physicalStock: '',
-    };
+      stock: 0,
+    }
 
-    this.variants.update((variants) =>
-      variants.map((variant) =>
-        variant.id === selectedVariant.id
-          ? { ...variant, rows: [...variant.rows, newRow] }
-          : variant,
-      ),
-    );
+    const updatedSkus = [...selectedVariant.skus, newSku];
+    this.productCreationService.setVariantSkus(selectedVariant.id, updatedSkus);
   }
 
-  updateRowValue(rowId: number, field: 'size' | 'physicalStock', event: Event): void {
-    const target = event.target as HTMLInputElement | null;
+
+  updateSkuValue(skuId: number, field: 'size' | 'stock', event: Event): void {
+    const target = event.target as HTMLInputElement;
     const value = target?.value ?? '';
     const selectedVariant = this.selectedVariant();
 
     if (!selectedVariant) {
       return;
     }
-
-    this.variants.update((variants) =>
-      variants.map((variant) => {
-        if (variant.id !== selectedVariant.id) {
-          return variant;
-        }
-
-        return {
-          ...variant,
-          rows: variant.rows.map((row) =>
-            row.id === rowId ? { ...row, [field]: value } : row,
-          ),
-        };
-      }),
-    );
+    if (field === 'size') {
+      const res: Result<void> = this.productCreationService.updateSkuSize(selectedVariant.id, skuId, value);
+      if (!res.success) {
+        this.notificationService.showError(res.error ?? 'A SKU with this size already exists.');
+        target.value = ""; // reset to empty or previous valid value
+      }
+    } else {
+      const stock = parseInt(value, 10) || 0;
+      this.productCreationService.updateSkuStock(selectedVariant.id, skuId, stock);
+    }
   }
 
-  deleteRow(rowId: number): void {
+  deleteRow(skuId: number): void {
     const selectedVariant = this.selectedVariant();
 
     if (!selectedVariant) {
       return;
     }
+    this.productCreationService.removeSkuFromVariant(selectedVariant.id, skuId);
+  }
 
-    this.variants.update((variants) =>
-      variants.map((variant) => {
-        if (variant.id !== selectedVariant.id) {
-          return variant;
+
+
+
+
+  next(): void {
+    if (this.isLoading()) {
+      return;
+    }
+
+    const requests: Observable<VariantSkusSubmissionResult>[] = [];
+    for (const variant of this.variants()) {
+      const skus = variant.skus.map(sku => ({
+        size: sku.size,
+        stock: sku.stock
+      }));
+
+      if (skus.length === 0) continue;
+
+      requests.push(
+        this.productStore.createProductVariantSkus(variant.id, skus).pipe(
+          map(createdSkus => ({
+            success: true,
+            variantId: variant.id,
+            createdSkus
+          })),
+          catchError(error =>{
+              console.error(`Failed to create SKUs for variant ${variant.id}:`, error);
+              return of({
+                success: false,
+                variantId: variant.id,
+                error
+              })
+            }
+          )
+        )
+      );
+    }
+
+    forkJoin(requests).subscribe({
+      next: (results: VariantSkusSubmissionResult[]) =>{
+        const successful = results.filter(r => r.success && r.createdSkus);
+        const failed = results.filter(r => !r.success);
+        
+        if (successful.length > 0) {
+          this.notificationService.showSuccess(`${successful.length} / ${this.variants().length} variant(s) SKUs created successfully.`);
+          this.productCreationService.goNextStep();
+          return;
         }
 
-        return {
-          ...variant,
-          rows: variant.rows.filter((row) => row.id !== rowId),
-        };
-      }),
-    );
+        this.notificationService.showError('Failed to create SKUs for all variants. Please try again.');
+      },
+    });
   }
+
+  previous(): void {
+    if (this.isLoading()) {
+      return;
+    }
+
+    this.productCreationService.goPreviousStep();
+  }
+
+
 
 }

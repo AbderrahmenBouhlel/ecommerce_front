@@ -32,7 +32,7 @@ export interface CreateProductVariantDataDTO {
   product_id: number;
   color_name: string;
   color_code: string;
-  createdAt: string;
+  created_at: string;
   images: CreateProductVariantImageDataDTO[];
 }
 

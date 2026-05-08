@@ -7,8 +7,6 @@ export type ProductStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
 
 
-
-
 export interface Product {
   id: number;
   status: ProductStatus;
@@ -29,6 +27,12 @@ export interface VariantImage {
   order: number;
 }
 
+export interface VariantSku {
+  id: number;
+  size: string;
+  stock: number;
+}
+
 
 
 export interface ProductVariant {
@@ -38,6 +42,7 @@ export interface ProductVariant {
   color_code: string;
   images: VariantImage[];
   createdAt: string;
+  skus: VariantSku[];
 }
 
 
@@ -66,7 +71,8 @@ export function mapCreateProductVariantDTOToProductVariant(dto: CreateProductVar
     color_name: dto.color_name,
     color_code: dto.color_code,
     images: dto.images ?? images,
-    createdAt: dto.createdAt,
+    createdAt: dto.created_at,
+    skus: [],
   };
 }
 
