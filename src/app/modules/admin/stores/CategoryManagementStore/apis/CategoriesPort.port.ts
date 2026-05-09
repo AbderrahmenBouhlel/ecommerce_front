@@ -9,6 +9,7 @@ import { GetCategoriesSuccessResponseDTO } from "./models/getCategories.api";
 import { SearchFiltersRequestDTO, SearchFiltersSuccessResponseDTO } from "./models/searchFilters.api";
 import { GetCategoryFiltersSuccessResponseDTO } from "./models/getCategoryFilters.api";
 import { UpdateCategoryRequestDTO, UpdateCategorySuccessResponseDTO } from "./models/updateCategory.api";
+import { GetLightCategoriesSuccessResponseDTO } from "./models/getCategoriesLight.api";
 
 export interface CategoriesPort {
 	createCategory(body: CreateCategoryRequestDTO): Observable<CreateCategorySuccessResponseDTO>;
@@ -20,4 +21,7 @@ export interface CategoriesPort {
 	deactivateCategory(categoryId: number): Observable<DeactivateCategorySuccessResponseDTO>;
 	searchFilters(body: SearchFiltersRequestDTO): Observable<SearchFiltersSuccessResponseDTO>;
 	getCategoryFiltersWithMetadata(categoryId: number): Observable<GetCategoryFiltersSuccessResponseDTO>;
+
+
+	getLightCategories(): Observable<GetLightCategoriesSuccessResponseDTO>;
 }

@@ -6,7 +6,7 @@ import { ApiError, ApiException, normolizeToApiError } from "../../../../../core
 import { CreateProductRequestDTO, CreateProductSuccessResponseDTO, mapCreateProductError } from "./models/createProduct.api";
 import { CreateProductVariantRequestDTO, CreateProductVariantSuccessResponseDTO, mapCreateProductVariantError } from "./models/createProductVariant.api";
 
-import { GetSelectableCategoriesSuccessResponseDTO, mapGetSelectableCategoriesError } from "./models/getSelectableCategories.api";
+
 import { CreateProductVariantSkusRequestDTO, CreateProductVariantSkusSuccessResponseDTO, mapCreateProductVariantSkusError } from "./models/createProductVariantSkus.api";
 import { CreateProductFilterValuesRequestDTO, CreateProductFilterValuesSuccessResponseDTO, mapCreateProductFilterValuesError } from "./models/createProductFilterValues.api";
 
@@ -55,17 +55,6 @@ export class ProductsAdapter implements ProductsPort {
       catchError((error: unknown) => {
         const apiError: ApiError = normolizeToApiError(error);
         const apiException: ApiException = mapCreateProductVariantError(apiError);
-        throw apiException;
-      }),
-    );
-  }
-
-
-  getSelectableCategories(): Observable<GetSelectableCategoriesSuccessResponseDTO> {
-    return this.http.get<GetSelectableCategoriesSuccessResponseDTO>(`${this.baseUrl}/categories/select`).pipe(
-      catchError((error: unknown) => {
-        const apiError: ApiError = normolizeToApiError(error);
-        const apiException: ApiException = mapGetSelectableCategoriesError(apiError);
         throw apiException;
       }),
     );

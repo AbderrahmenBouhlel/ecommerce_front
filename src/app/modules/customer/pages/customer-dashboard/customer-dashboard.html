@@ -1,7 +1,12 @@
 <div class="flex min-h-screen flex-col bg-slate-100">
 	<app-brand-navbar homeLink="/customer" />
 
-	<main class="flex-1 p-6">
-		<p>customer-dashboard works!</p>
-	</main>
+	<div class="flex flex-1">
+		<app-customer-sidebar [categoriesByGender]="categoriesByGender" class="shrink-0" />
+
+		<main class="flex-1 p-6 ml-20">
+			<p>customer-dashboard works!</p>
+		</main>
+	</div>
+
 </div>

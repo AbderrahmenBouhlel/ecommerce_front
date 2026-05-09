@@ -2,10 +2,10 @@
 import { ResolveFn } from '@angular/router';
 import { inject } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
-import { AllowedFilter } from '../stores/CategoryManagementStore/models/Category.model';
-import { CategoryFilterWithMetadataDTO } from '../stores/CategoryManagementStore/apis/models/getCategoryFilters.api';
-import {CATEGORIES_PORT} from '../stores/CategoryManagementStore/categories.store';
-import { ProductCreationService } from '../features/product-managment/services/ProductCreationService';
+import { AllowedFilter } from '../../../stores/CategoryManagementStore/models/Category.model';
+import { CategoryFilterWithMetadataDTO } from '../../../stores/CategoryManagementStore/apis/models/getCategoryFilters.api';
+import { CATEGORIES_PORT } from '../../../stores/CategoryManagementStore/categories.store';
+import { ProductCreationService } from '../services/ProductCreationService';
 
 export const Step4AllowedFiltersResolver: ResolveFn<CategoryFilterWithMetadataDTO[]> = (route, state): Observable<CategoryFilterWithMetadataDTO[]> => {
   

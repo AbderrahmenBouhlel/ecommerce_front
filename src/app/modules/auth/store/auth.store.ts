@@ -24,9 +24,7 @@ export class AuthStore {
     constructor(
         @Inject(AUTH_PORT) private authPort: AuthPort,
         private authNavigationService: AuthNavigationService
-    ) {
-        console.log("AuthStore initialized");
-    }
+    ) {}
     
 
     logout() {

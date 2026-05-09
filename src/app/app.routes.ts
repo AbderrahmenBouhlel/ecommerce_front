@@ -39,7 +39,7 @@ export const routes: Routes = [
     {
         path: 'customer',
         // canActivate: [customerGuard], // Highly recommended for your project
-        loadChildren: () => import('./modules/customer/customer.routes').then(m => m.CUSTOMER_ROUTES),
+        loadChildren: () => import('./modules/customer/routes/customer.routes').then(m => m.CUSTOMER_ROUTES),
         canActivate: [RequireRoleGuardGenerator(['CUSTOMER'])]
     },
 

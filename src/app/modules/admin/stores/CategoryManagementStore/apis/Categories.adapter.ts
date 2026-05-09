@@ -12,6 +12,7 @@ import { GetCategoriesSuccessResponseDTO, mapGetCategoriesError } from "./models
 import { SearchFiltersRequestDTO, SearchFiltersSuccessResponseDTO, mapSearchFiltersError } from "./models/searchFilters.api";
 import { GetCategoryFiltersSuccessResponseDTO, mapGetCategoryFiltersError } from "./models/getCategoryFilters.api";
 import { UpdateCategoryRequestDTO, UpdateCategorySuccessResponseDTO, mapUpdateCategoryError } from "./models/updateCategory.api";
+import { GetLightCategoriesSuccessResponseDTO, mapGetLightCategoriesError } from "./models/getCategoriesLight.api";
 
 
 
@@ -113,4 +114,17 @@ export class CategoriesAdapter implements CategoriesPort {
       }),
     );
   }
+
+
+
+
+  getLightCategories(): Observable<GetLightCategoriesSuccessResponseDTO> {
+      return this.http.get<GetLightCategoriesSuccessResponseDTO>(`http://127.0.0.1:8000/api/v1/admin/categories/light`).pipe(
+        catchError((error: unknown) => {
+          const apiError: ApiError = normolizeToApiError(error);
+          const apiException: ApiException = mapGetLightCategoriesError(apiError);
+          throw apiException;
+        }),
+      );
+    }
 }

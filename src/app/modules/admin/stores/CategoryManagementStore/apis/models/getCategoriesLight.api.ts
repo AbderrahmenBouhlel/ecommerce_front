@@ -10,18 +10,18 @@ import {
   UnknownApiException,
 } from "../../../../../../core/shared/api/api.responseTypes";
 
-export type SelectableCategoryGenderDTO = "MALE" | "FEMALE";
+export type LightCategoryGenderDTO = "MALE" | "FEMALE";
 
-export interface SelectableCategoryDTO {
+export interface LightCategoryDTO {
   id: number;
   name: string;
-  gender: SelectableCategoryGenderDTO;
+  gender: LightCategoryGenderDTO;
   isActive: boolean;
 }
 
-export type GetSelectableCategoriesSuccessResponseDTO = ApiSuccessResponseBody<SelectableCategoryDTO[]>;
+export type GetLightCategoriesSuccessResponseDTO = ApiSuccessResponseBody<LightCategoryDTO[]>;
 
-export function mapGetSelectableCategoriesError(err: ApiError): ApiException {
+export function mapGetLightCategoriesError(err: ApiError): ApiException {
   if (err.kind === "network") {
     return new NetworkException(err.message ?? "Server unreachable or network error");
   }

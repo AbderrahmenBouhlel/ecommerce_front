@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, signal } from "@angular/core";
+import { inject, Inject, Injectable, InjectionToken, signal } from "@angular/core";
 import { ApiException } from "../../../../core/shared/api/api.responseTypes";
 import { LoadState } from "../../../../core/shared/state/load-state";
 import { Observable, catchError, map } from "rxjs";
@@ -6,7 +6,7 @@ import { ProductsPort } from "./apis/ProductsPort.port";
 import { CreateProductSuccessResponseDTO ,CreateProductRequestDTO} from "./apis/models/createProduct.api";
 import { CreateProductVariantSuccessResponseDTO , CreateProductVariantRequestDTO } from "./apis/models/createProductVariant.api";
 
-import { GetSelectableCategoriesSuccessResponseDTO } from "./apis/models/getSelectableCategories.api";
+import { GetLightCategoriesSuccessResponseDTO } from "../CategoryManagementStore/apis/models/getCategoriesLight.api";
 import { CreateProductVariantSkusRequestDTO, CreateProductVariantSkusSuccessResponseDTO } from "./apis/models/createProductVariantSkus.api";
 import { CreateProductFilterValuesRequestDTO, CreateProductFilterValuesSuccessResponseDTO } from "./apis/models/createProductFilterValues.api";
 import {
@@ -23,6 +23,8 @@ import { VariantSku } from "./models/product.model";
 
 import { SelectableCategory , mapSelectableCategoryDTOToSelectableCategory } from "./models/selectableCategories.model";
 import { ProductsState, SelectableCategoryState } from "./state/products.state";
+import { CATEGORIES_PORT } from "../CategoryManagementStore/categories.store";
+import { CategoriesPort } from "../CategoryManagementStore/apis/CategoriesPort.port";
 
 export const PRODUCTS_PORT = new InjectionToken<ProductsPort>("PRODUCTS_PORT");
 
@@ -38,12 +40,16 @@ export class ProductsStore {
   private readonly productsState = signal<ProductsState>({ items: [] });
   private readonly selectableCategoriesState = signal<SelectableCategoryState>({ items: [] });
   private readonly loadState = signal<LoadState>({ status: "idle" });
+ 
 
   readonly productsState$ = this.productsState.asReadonly();
   readonly selectableCategoriesState$ = this.selectableCategoriesState.asReadonly();
   readonly loadingState$ = this.loadState.asReadonly();
 
-  constructor(@Inject(PRODUCTS_PORT) private readonly productsPort: ProductsPort) {}
+  constructor(
+    @Inject(PRODUCTS_PORT) private readonly productsPort: ProductsPort,
+    @Inject(CATEGORIES_PORT) private readonly categoriesPort: CategoriesPort,
+  ) {}
 
   createProduct(name: string, categoryId: number, price: number, description?: string): Observable<Product> {
     const productDto: CreateProductRequestDTO = {
@@ -163,8 +169,8 @@ export class ProductsStore {
   loadSelectableCategories(): Observable<SelectableCategory[]> {
     this.loadState.set({ status: "loading" });
 
-    return this.productsPort.getSelectableCategories().pipe(
-      map((response: GetSelectableCategoriesSuccessResponseDTO) => {
+    return this.categoriesPort.getLightCategories().pipe(
+      map((response: GetLightCategoriesSuccessResponseDTO) => {
         const items = response.data.map((item) => mapSelectableCategoryDTOToSelectableCategory(item));
         this.selectableCategoriesState.set({ items });
         this.loadState.set({ status: "success" });

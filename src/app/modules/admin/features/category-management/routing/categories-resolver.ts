@@ -1,13 +1,14 @@
-import { ResolveFn, Router } from '@angular/router';
+import { ResolveFn } from '@angular/router';
 import { inject } from '@angular/core';
-import { FiltersStore } from '../stores/FilterManagementStore/filters.store';
+import { CategoriesStore } from '../../../stores/CategoryManagementStore/categories.store';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
-export const filtersResolver: ResolveFn<boolean> = (route, state): Observable<boolean> => {
-  const filtersStore = inject(FiltersStore);
+
+export const categoriesResolver: ResolveFn<boolean> = (route, state): Observable<boolean> => {
+  const categoriesStore = inject(CategoriesStore);
   // const router = inject(Router);
 
-  return filtersStore.loadFilters().pipe(
+  return categoriesStore.loadCategories().pipe(
     map((response) => {
       // success → allow navigation
       return true;

@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { AdminDashboardPage } from '../features/dashboard/admin-dashboard-page/admin-dashboard-page';
 import { FilterManagementPage } from '../features/filter-managment/filter-management-page/filter-management-page';
-import { filtersResolver } from './filters-resolver';
-import { categoriesResolver } from './categories-resolver';
+import { filtersResolver } from '../features/filter-managment/routing/filters-resolver';
+import { categoriesResolver } from '../features/category-management/routing/categories-resolver';
 import { CategoryManagementPage } from '../features/category-management/category-management-page/category-management-page';
 
 
@@ -16,13 +16,14 @@ import { Step3SkusCreationComponent } from '../features/product-managment/compon
 import { Step4FilterValuesAttachementComponent } from '../features/product-managment/components/step4-filter-values-attachement-component/step4-filter-values-attachement-component';
 
 
-import { Step4AllowedFiltersResolver } from './step4-allowed-filter-resolver';
+import { Step4AllowedFiltersResolver } from '../features/product-managment/routing/step4-allowed-filter-resolver';
 import { ProductCreationService } from '../features/product-managment/services/ProductCreationService';
 export const ADMIN_ROUTES: Routes = [
     {
         path: '', // This corresponds to /admin
         component: AdminDashboardPage,
         children: [
+            {path: '', redirectTo: 'products', pathMatch: 'full'}, // Redirect /admin to /admin/products
             {
                 path: 'taxonomy/filters',
                 component: FilterManagementPage,
