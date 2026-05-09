@@ -7,6 +7,7 @@ import { DisableCategoryFilterSuccessResponseDTO } from "./models/disableCategor
 import { EnableCategoryFilterSuccessResponseDTO } from "./models/enableCategoryFilter.api";
 import { GetCategoriesSuccessResponseDTO } from "./models/getCategories.api";
 import { SearchFiltersRequestDTO, SearchFiltersSuccessResponseDTO } from "./models/searchFilters.api";
+import { GetCategoryFiltersSuccessResponseDTO } from "./models/getCategoryFilters.api";
 import { UpdateCategoryRequestDTO, UpdateCategorySuccessResponseDTO } from "./models/updateCategory.api";
 
 export interface CategoriesPort {
@@ -18,4 +19,5 @@ export interface CategoriesPort {
 	activateCategory(categoryId: number): Observable<ActivateCategorySuccessResponseDTO>;
 	deactivateCategory(categoryId: number): Observable<DeactivateCategorySuccessResponseDTO>;
 	searchFilters(body: SearchFiltersRequestDTO): Observable<SearchFiltersSuccessResponseDTO>;
+	getCategoryFiltersWithMetadata(categoryId: number): Observable<GetCategoryFiltersSuccessResponseDTO>;
 }

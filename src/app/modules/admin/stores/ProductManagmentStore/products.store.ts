@@ -8,11 +8,14 @@ import { CreateProductVariantSuccessResponseDTO , CreateProductVariantRequestDTO
 
 import { GetSelectableCategoriesSuccessResponseDTO } from "./apis/models/getSelectableCategories.api";
 import { CreateProductVariantSkusRequestDTO, CreateProductVariantSkusSuccessResponseDTO } from "./apis/models/createProductVariantSkus.api";
+import { CreateProductFilterValuesRequestDTO, CreateProductFilterValuesSuccessResponseDTO } from "./apis/models/createProductFilterValues.api";
 import {
   mapCreateProductDTOToProduct,
   mapCreateProductVariantDTOToProductVariant,
+  mapProductFilterValueDTOToProductFilterValue,
   Product,
   ProductVariant,
+  ProductFilterValue,
 } from "./models/product.model";
 
 import { VariantSku } from "./models/product.model";
@@ -115,6 +118,39 @@ export class ProductsStore {
         this.setProducts(updatedProducts);
 
         return created;
+      }),
+      catchError((err: ApiException) => {
+        this.loadState.set({ status: "error", error: err.message });
+        throw err;
+      }),
+    );
+  }
+
+  createProductFilterValues(productId: number, filterValueIds: number[]): Observable<ProductFilterValue[]> {
+    const body: CreateProductFilterValuesRequestDTO = {
+      filter_values: filterValueIds.map((filterValueId: number) => ({ filter_value_id: filterValueId })),
+    };
+
+    return this.productsPort.createProductFilterValues(productId, body).pipe(
+      map((response: CreateProductFilterValuesSuccessResponseDTO) => {
+        const createdFilterValues: ProductFilterValue[] = response.data.map((item) =>
+          mapProductFilterValueDTOToProductFilterValue(item),
+        );
+
+        const updatedProducts = this.productsState().items.map((product: Product) => {
+          if (product.id !== productId) {
+            return product;
+          }
+
+          return {
+            ...product,
+            filterValues: [...product.filterValues, ...createdFilterValues],
+          };
+        });
+
+        this.setProducts(updatedProducts);
+
+        return createdFilterValues;
       }),
       catchError((err: ApiException) => {
         this.loadState.set({ status: "error", error: err.message });

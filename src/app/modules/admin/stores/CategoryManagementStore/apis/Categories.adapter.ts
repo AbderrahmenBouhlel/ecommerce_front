@@ -10,6 +10,7 @@ import { DisableCategoryFilterSuccessResponseDTO, mapDisableCategoryFilterError 
 import { EnableCategoryFilterSuccessResponseDTO, mapEnableCategoryFilterError } from "./models/enableCategoryFilter.api";
 import { GetCategoriesSuccessResponseDTO, mapGetCategoriesError } from "./models/getCategories.api";
 import { SearchFiltersRequestDTO, SearchFiltersSuccessResponseDTO, mapSearchFiltersError } from "./models/searchFilters.api";
+import { GetCategoryFiltersSuccessResponseDTO, mapGetCategoryFiltersError } from "./models/getCategoryFilters.api";
 import { UpdateCategoryRequestDTO, UpdateCategorySuccessResponseDTO, mapUpdateCategoryError } from "./models/updateCategory.api";
 
 
@@ -96,6 +97,18 @@ export class CategoriesAdapter implements CategoriesPort {
       catchError((error: unknown) => {
         const apiError: ApiError = normolizeToApiError(error);
         const apiException: ApiException = mapSearchFiltersError(apiError);
+        throw apiException;
+      }),
+    );
+  }
+
+
+  // get filters (and their values) associated with a specific category
+  getCategoryFiltersWithMetadata(categoryId: number): Observable<GetCategoryFiltersSuccessResponseDTO> {
+    return this.http.get<GetCategoryFiltersSuccessResponseDTO>(`http://127.0.0.1:8000/api/v1/admin/categories/${categoryId}/filters`).pipe(
+      catchError((error: unknown) => {
+        const apiError: ApiError = normolizeToApiError(error);
+        const apiException: ApiException = mapGetCategoryFiltersError(apiError);
         throw apiException;
       }),
     );

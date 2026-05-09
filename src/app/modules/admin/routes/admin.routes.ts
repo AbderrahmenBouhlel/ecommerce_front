@@ -15,6 +15,9 @@ import { Step2VariantsCreationComponent } from '../features/product-managment/co
 import { Step3SkusCreationComponent } from '../features/product-managment/components/step3-skus-creation-component/step3-skus-creation-component';
 import { Step4FilterValuesAttachementComponent } from '../features/product-managment/components/step4-filter-values-attachement-component/step4-filter-values-attachement-component';
 
+
+import { Step4AllowedFiltersResolver } from './step4-allowed-filter-resolver';
+import { ProductCreationService } from '../features/product-managment/services/ProductCreationService';
 export const ADMIN_ROUTES: Routes = [
     {
         path: '', // This corresponds to /admin
@@ -47,12 +50,20 @@ export const ADMIN_ROUTES: Routes = [
             {
                 path: 'products/new',
                 component: ProductCreationPage,
+                providers: [ProductCreationService], // Provide the service here if it's only used in this route and its children
                 children: [
-                    {path: '', redirectTo: 'step-4', pathMatch: 'full'},
+                    {path: '', redirectTo: 'step-1', pathMatch: 'full'},
                     {path: 'step-1', component: Step1BasicInfoComponent},
                     {path: 'step-2', component: Step2VariantsCreationComponent},
                     {path: 'step-3', component: Step3SkusCreationComponent},
-                    {path: 'step-4', component: Step4FilterValuesAttachementComponent}
+                    {
+                        path: 'step-4', 
+                        component: Step4FilterValuesAttachementComponent,
+                        resolve: {
+                            categoryFiltersWithMetadata: Step4AllowedFiltersResolver
+                        }
+
+                    }
                 ]
             }
 

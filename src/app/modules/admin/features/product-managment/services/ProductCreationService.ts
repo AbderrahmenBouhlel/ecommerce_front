@@ -6,7 +6,7 @@ import { VariantCreationState,BasicProductInfo, VariantDraft, VariantDraftImage,
 @Injectable() 
 export class ProductCreationService {
 
-  private currentStep = signal(4);
+  private currentStep = signal(1);
   public currentStep$ = this.currentStep.asReadonly();
 
 
@@ -50,6 +50,11 @@ export class ProductCreationService {
 
   public goPreviousStep() {
     this.goToStep(Math.max(this.currentStep() - 1, 1));
+  }
+
+  public finilizeCreation() {
+    this.factoryReset();
+    this.router.navigate(['/admin/products']);
   }
 
 
@@ -224,6 +229,26 @@ export class ProductCreationService {
   private updateSkuInVariantSilent(variantId: number, skuId: number, patch: Partial<VariantSku>): void {
     const updated = this.getVariantSkus(variantId).map(s => s.id === skuId ? { ...s, ...patch } : s);
     this.setVariantSkus(variantId, updated);
+  }
+
+
+
+
+  private factoryReset() {
+    this.basicInfo = {
+      id: 0,
+      name: '',
+      description: '',
+      price: 0,
+      categoryId: null,
+      submitted: false
+    };
+    this.variantsState.set({
+      items: [],
+      step_2_submitted: false,
+      step_3_submitted: false
+    });
+    this.currentStep.set(1);
   }
 
 }

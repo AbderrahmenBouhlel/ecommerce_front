@@ -1,5 +1,9 @@
-<!-- Dashboard shell: sidebar + content area -->
-<div class="flex min-h-screen bg-slate-100">
+<!-- Dashboard shell: brand bar + sidebar/content area -->
+<div class="flex min-h-screen flex-col bg-slate-100">
+
+    <app-brand-navbar homeLink="/admin" />
+
+    <div class="flex min-h-0 flex-1">
 
     <aside
         class="border-r border-slate-700/70 bg-slate-900 px-3 py-4 text-slate-300 transition-all duration-200"
@@ -116,5 +120,7 @@
     <main class="min-w-0 flex-1 overflow-auto bg-slate-50">
         <router-outlet></router-outlet>
     </main>
+
+    </div>
 
 </div>

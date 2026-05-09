@@ -1,5 +1,6 @@
 import { CreateProductDataDTO } from "../apis/models/createProduct.api";
 import { CreateProductVariantDataDTO } from "../apis/models/createProductVariant.api";
+import { ProductFilterValueDataDTO } from "../apis/models/createProductFilterValues.api";
 
 
     
@@ -16,6 +17,7 @@ export interface Product {
   categoryId: number;
   createdAt: string;
   updatedAt?: string;
+  filterValues: ProductFilterValue[];
   variants: ProductVariant[];
 }
 
@@ -31,6 +33,13 @@ export interface VariantSku {
   id: number;
   size: string;
   stock: number;
+}
+
+export interface ProductFilterValue {
+  id: string;
+  productId: number;
+  filterValueId: number;
+  name: string;
 }
 
 
@@ -60,6 +69,7 @@ export function mapCreateProductDTOToProduct(dto: CreateProductDataDTO, variants
     price: dto.price,
     categoryId: dto.categoryId,
     createdAt: dto.createdAt,
+    filterValues: [],
     variants,
   };
 }
@@ -73,6 +83,15 @@ export function mapCreateProductVariantDTOToProductVariant(dto: CreateProductVar
     images: dto.images ?? images,
     createdAt: dto.created_at,
     skus: [],
+  };
+}
+
+export function mapProductFilterValueDTOToProductFilterValue(dto: ProductFilterValueDataDTO): ProductFilterValue {
+  return {
+    id: dto.id,
+    productId: dto.product_id,
+    filterValueId: dto.filter_value_id,
+    name: dto.filter_value_name,
   };
 }
 

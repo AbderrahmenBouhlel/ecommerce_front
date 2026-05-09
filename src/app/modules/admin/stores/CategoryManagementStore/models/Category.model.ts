@@ -26,13 +26,6 @@ export interface Category {
 	allowedFilters: AllowedFilter[];
 }
 
-export interface CategorySearchFilter {
-	id: number;
-	name: string;
-	slug: string;
-	description: string;
-	isActive: boolean;
-}
 
 export function mapAllowedFilterDTOToAllowedFilter(dto: AllowedFilterDTO): AllowedFilter {
 	return {
