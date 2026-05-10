@@ -2,6 +2,9 @@ import {
   ApiError,
   ApiException,
   ApiSuccessResponseBody,
+  BadRequestException,
+  CategoryInactiveException,
+  CategoryNotFoundException,
   InternalServerException,
   NetworkException,
   ServiceUnavailableError,
@@ -10,19 +13,31 @@ import {
   UnknownApiException,
 } from "../../../../../../core/shared/api/api.responseTypes";
 
-export type LightCategoryGenderDTO = "MALE" | "FEMALE";
-
-export interface LightCategoryDTO {
+export interface CategoryCatalogProductDTO {
   id: number;
   name: string;
-  gender: LightCategoryGenderDTO;
   slug: string;
-  isActive: boolean;
+  price: number;
+  cover_image_url: string;
+  hover_image_url: string;
+  is_active: boolean;
+  filter_values: CategoryCatalogFilterValueDTO[];
 }
 
-export type GetLightCategoriesSuccessResponseDTO = ApiSuccessResponseBody<LightCategoryDTO[]>;
+export interface CategoryCatalogFilterValueDTO {
+  id: number;
+  name: string;
+  slug: string;
+}
 
-export function mapGetLightCategoriesError(err: ApiError): ApiException {
+export interface CategoryCatalogDataDTO {
+  products: CategoryCatalogProductDTO[];
+  filter_values: CategoryCatalogFilterValueDTO[];
+}
+
+export type GetCategoryCatalogSuccessResponseDTO = ApiSuccessResponseBody<CategoryCatalogDataDTO>;
+
+export function mapGetCategoryCatalogError(err: ApiError): ApiException {
   if (err.kind === "network") {
     return new NetworkException(err.message ?? "Server unreachable or network error");
   }
@@ -35,6 +50,15 @@ export function mapGetLightCategoriesError(err: ApiError): ApiException {
 
     case "AUTH.UNAUTHORIZED_ACTION":
       return new UnauthorizedActionError(err.code, err.message);
+
+    case "REQUEST.INVALID":
+      return new BadRequestException(err.code, err.message);
+
+    case "CATEGORY.NOT_FOUND":
+      return new CategoryNotFoundException(err.code, err.message);
+
+    case "CATEGORY.INACTIVE":
+      return new CategoryInactiveException(err.code, err.message);
 
     case "SYSTEM.SERVICE_UNAVAILABLE":
       return new ServiceUnavailableError(err.code, err.message);

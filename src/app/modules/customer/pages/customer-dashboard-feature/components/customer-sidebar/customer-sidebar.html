@@ -1,0 +1,156 @@
+<aside
+  class="group absolute top-15 left-0 h-full
+         w-16 hover:w-72
+         overflow-hidden
+         border-r border-white/10
+         bg-slate-900/95 backdrop-blur-xl
+         transition-all duration-300 ease-out"
+>
+
+  <!-- Top Controls -->
+  <div class="absolute top-5 left-5 z-20">
+
+    <!-- Burger -->
+    <button
+      type="button"
+      class="absolute inset-0 cursor-pointer
+             transition-opacity duration-200
+             group-hover:opacity-0"
+    >
+      <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/>
+      </svg>
+    </button>
+
+    <!-- Close -->
+    <button
+      type="button"
+      class="cursor-pointer opacity-0
+             transition-opacity duration-200
+             group-hover:opacity-100"
+    >
+      <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <!-- Content -->
+  <div class="h-full opacity-0 -translate-x-4
+              transition-all duration-300 ease-out
+              group-hover:opacity-100 group-hover:translate-x-0">
+
+    <!-- Gender Tabs -->
+    <div class="pt-4 pl-24">
+      <div class="inline-flex rounded-2xl bg-white/5 p-1 border border-white/10">
+
+        <button
+          type="button"
+          (click)="selectGender('MALE')"
+          class="px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer"
+          [ngClass]="{
+            'bg-white text-slate-900 shadow-lg': selectedGender() === 'MALE',
+            'text-white/60 hover:text-white': selectedGender() !== 'MALE'
+          }"
+        >
+          Male
+        </button>
+
+        <button
+          type="button"
+          (click)="selectGender('FEMALE')"
+          class="ml-1 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer"
+          [ngClass]="{
+            'bg-white text-slate-900 shadow-lg': selectedGender() === 'FEMALE',
+            'text-white/60 hover:text-white': selectedGender() !== 'FEMALE'
+          }"
+        >
+          Female
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <nav class="mt-8 px-3 overflow-y-auto">
+      <ul class="space-y-2">
+
+        @for (c of filteredCategories(); track c.id) {
+
+          <li class="group/item">
+
+            <a
+              (click)="onSelectCategory(c.slug)"
+              class="relative flex items-center gap-3 px-4 py-3 rounded-2xl overflow-hidden cursor-pointer border transition-all duration-200 ease-out active:scale-[0.98]"
+
+              [ngClass]="{
+                'bg-white/10 border-white/20 shadow-2xl translate-x-1':
+                  selectedCategorySlug() === c.slug,
+
+                'border-transparent hover:bg-white/5 hover:border-white/10 hover:translate-x-1 hover:shadow-2xl':
+                  selectedCategorySlug() !== c.slug
+              }"
+            >
+
+              <!-- Left Accent -->
+              <div
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full bg-white transition-all duration-200"
+                [ngClass]="{
+                  'h-7': selectedCategorySlug() === c.slug,
+                  'h-0 group-hover/item:h-7': selectedCategorySlug() !== c.slug
+                }"
+              ></div>
+
+              <!-- Circle -->
+              <div
+                class="w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-200"
+                [ngClass]="{
+                  'bg-white/15 border-white/30': selectedCategorySlug() === c.slug,
+                  'bg-white/5 border-white/10 group-hover/item:bg-white/10 group-hover/item:border-white/20': selectedCategorySlug() !== c.slug
+                }"
+              >
+                <div
+                  class="w-2 h-2 rounded-full transition-all duration-200"
+                  [ngClass]="{
+                    'bg-white': selectedCategorySlug() === c.slug,
+                    'bg-white/70': selectedCategorySlug() !== c.slug
+                  }"
+                ></div>
+              </div>
+
+              <!-- Content -->
+              <div class="flex flex-col min-w-0">
+                <span
+                  class="text-sm font-medium tracking-wide truncate transition-colors duration-200"
+                  [ngClass]="{
+                    'text-white': selectedCategorySlug() === c.slug,
+                    'text-white/80 group-hover/item:text-white': selectedCategorySlug() !== c.slug
+                  }"
+                >
+                  {{ c.name }}
+                </span>
+
+                <span
+                  class="text-[11px] transition-colors duration-200"
+                  [ngClass]="{
+                    'text-white/60': selectedCategorySlug() === c.slug,
+                    'text-white/40': selectedCategorySlug() !== c.slug
+                  }"
+                >
+                  Category
+                </span>
+              </div>
+
+            </a>
+
+          </li>
+
+        }
+
+      </ul>
+    </nav>
+
+  </div>
+
+</aside>

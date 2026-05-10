@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { BrandNavbar } from '../../../../core/shared/ui/navbar/brand-navbar/brand-navbar';
-import { CustomerSidebarComponent } from '../../components/customer-sidebar/customer-sidebar';
+import { BrandNavbar } from '../../../../../core/shared/ui/navbar/brand-navbar/brand-navbar';
+import { CustomerSidebarComponent } from '../components/customer-sidebar/customer-sidebar';
 import { ActivatedRoute } from '@angular/router';
-import { LightCategoryDTO } from '../../../admin/stores/CategoryManagementStore/apis/models/getCategoriesLight.api';
-
+import { LightCategoryDTO } from '../../../../admin/stores/CategoryManagementStore/apis/models/getCategoriesLight.api';
+import { RouterModule } from '@angular/router';
 
 
 export type CategoryGender = 'MALE' | 'FEMALE';
@@ -16,7 +16,7 @@ export type CategoriesByGender = {
 
 @Component({
   selector: 'app-customer-dashboard',
-  imports: [BrandNavbar, CustomerSidebarComponent],
+  imports: [BrandNavbar, CustomerSidebarComponent, RouterModule],
   templateUrl: './customer-dashboard.html',
   styleUrl: './customer-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,8 +31,6 @@ export class CustomerDashboard {
       MALE: categories.filter(c => c.gender === 'MALE'),
       FEMALE: categories.filter(c => c.gender === 'FEMALE')
     };
-
-    console.log(this.categoriesByGender);
   }
 
 }

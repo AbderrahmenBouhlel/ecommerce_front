@@ -22,6 +22,9 @@ import { CategoriesAdapter } from './modules/admin/stores/CategoryManagementStor
 import {PRODUCTS_PORT} from './modules/admin/stores/ProductManagmentStore/products.store';
 import { ProductsAdapter } from './modules/admin/stores/ProductManagmentStore/apis/ProductsAdapter.adapter';
 
+import { CATEGORY_CATALOG_PORT } from './modules/customer/stores/CategoryCatalogManagment/categoryCatalog.store';
+import { CategoryCatalogAdapter } from './modules/customer/stores/CategoryCatalogManagment/apis/CategoryCatalog.adapter';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,6 +40,8 @@ export const appConfig: ApplicationConfig = {
     {provide: CATEGORIES_PORT, useClass: CategoriesAdapter},
 
     {provide: PRODUCTS_PORT, useClass: ProductsAdapter},
+
+    {provide: CATEGORY_CATALOG_PORT, useClass: CategoryCatalogAdapter},
 
 
 

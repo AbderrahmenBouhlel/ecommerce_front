@@ -1,0 +1,118 @@
+<!-- category-page.html -->
+
+@let state = vm();
+
+@if (state.status === 'loading') {
+
+<div class="flex items-center justify-center min-h-[300px]">
+  <p class="text-sm text-gray-500">
+    Loading catalog...
+  </p>
+</div>
+
+}
+
+@if (state.status === 'error') {
+
+<div class="flex items-center justify-center min-h-[300px]">
+  <p class="text-sm text-red-500">
+    {{ state.message }}
+  </p>
+</div>
+
+}
+
+@if (state.status === 'success') {
+
+<div class="px-6 py-8">
+
+  <!-- FILTERS -->
+
+  <div
+    class="flex items-center justify-center gap-5 overflow-x-auto mb-10"
+  >
+
+    <button
+      class="text-sm border-b transition-all duration-200"
+      [ngClass]="{
+        'border-black text-black': selectedFilterSlug() === null,
+        'border-transparent text-gray-500 hover:text-black':
+          selectedFilterSlug() !== null
+      }"
+    >
+      All
+    </button>
+
+    @for (filter of filters(); track trackByFilter($index, filter)) {
+
+    <button
+      class="text-sm border-b transition-all duration-200 whitespace-nowrap pb-1"
+      [ngClass]="{
+        'border-black text-black':
+          selectedFilterSlug() === filter.slug,
+
+        'border-transparent text-gray-500 hover:text-black':
+          selectedFilterSlug() !== filter.slug
+      }"
+      (click)="selectFilter(filter.slug)"
+    >
+      {{ filter.name }}
+    </button>
+
+    }
+
+  </div>
+
+  <!-- PRODUCTS -->
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+  >
+
+    @for (product of products(); track trackByProduct($index, product)) {
+
+    <div class="group cursor-pointer">
+
+      <!-- IMAGE -->
+
+      <div
+        class="relative aspect-[3/4] overflow-hidden bg-gray-100"
+      >
+
+        <img
+          class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+          [src]="MEDIA_BASE_URL + product.coverImageUrl"
+          [alt]="product.name"
+        />
+
+        <img
+          class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          [src]="MEDIA_BASE_URL + product.hoverImageUrl"
+          [alt]="product.name"
+        />
+
+      </div>
+
+      <!-- INFO -->
+
+      <div class="pt-3">
+
+        <p class="text-sm text-black">
+          {{ product.name }}
+        </p>
+
+        <p class="text-sm font-medium mt-1">
+          {{ product.price }} TND
+        </p>
+
+      </div>
+
+    </div>
+
+    }
+
+  </div>
+
+</div>
+
+}
